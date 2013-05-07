@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import jp.co.nicovideo.eka2513.commentviewerj.constants.CommentViewerConstants;
+
 public class PluginSettingUtil<T> {
 
 //	public static void main(String[] args) {
@@ -49,6 +51,6 @@ public class PluginSettingUtil<T> {
 	}
 
 	private String createFilename(T object) {
-		return object.getClass().getName() + ".xml";
+		return CommentViewerConstants.PLUGIN_XML_DIR + object.getClass().getName() + ".xml";
 	}
 }
