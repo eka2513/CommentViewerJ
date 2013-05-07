@@ -9,14 +9,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import jp.co.nicovideo.eka2513.commentviewerj.constants.CommentViewerConstants;
+import jp.co.nicovideo.eka2513.commentviewerj.plugin.ChukeiRainbowPlugin;
 
 public class PluginSettingUtil<T> {
 
-//	public static void main(String[] args) {
-//		new XmlEncodeUtil<SimplePlugin>().save(new SimplePlugin());
-//		SimplePlugin obj = new XmlEncodeUtil<SimplePlugin>().load(SimplePlugin.class);
-//		obj.foo("あああああ");
-//	}
+	public static void main(String[] args) {
+		new PluginSettingUtil<ChukeiRainbowPlugin>().save(new ChukeiRainbowPlugin());
+		ChukeiRainbowPlugin obj = new PluginSettingUtil<ChukeiRainbowPlugin>().load(
+			CommentViewerConstants.PLUGIN_XML_DIR + ChukeiRainbowPlugin.class.getName() + ".xml"
+		);
+	}
 
 	/**
 	 * インスタンスをxmlにセーブします

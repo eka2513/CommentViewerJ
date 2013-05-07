@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugins>
  <plugin class="jp.co.nicovideo.eka2513.commentviewerj.plugin.SimplePlugin"/>
+ <plugin class="jp.co.nicovideo.eka2513.commentviewerj.plugin.ChukeiRainbowPlugin"/>
 </plugins>
