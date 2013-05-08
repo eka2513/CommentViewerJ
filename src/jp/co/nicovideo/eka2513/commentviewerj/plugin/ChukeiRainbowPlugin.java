@@ -11,7 +11,10 @@ public class ChukeiRainbowPlugin extends AbstractCommentViewerPlugin {
 
 	private ThreadMessage threadMessage;
 
-	public ChukeiRainbowPlugin(){
+	private Integer loopCount;
+
+	public ChukeiRainbowPlugin() {
+		loopCount = 20;
 	}
 
 	@Override
@@ -32,10 +35,10 @@ public class ChukeiRainbowPlugin extends AbstractCommentViewerPlugin {
 //				sendComment("yellow big 184", "BIG文字でコメント");
 //				sendBSPComment("184", "ああああああ", "BSPBSP", "niconicowhite");
 //				sendUneiBSPComment("184", "な ん ち ゃ っ て B S P コ メ ン ト", "BSP", "niconicowhite");
-				for (int i=0; i<100; i++) {
+				for (int i=0; i<loopCount; i++) {
 					sendUneiComment("184", String.format("/chukei %s23 %s", Integer.toHexString(new Random().nextInt(4096)), e.getMessage().getText()), "");
 				}
-				sendUneiComment("184", "おもしろいのでコメントしてみてください", "");
+				sendUneiComment("184", "主は寝てますおもしろいのでコメントしてみてください", "");
 				sendUneiComment("184", "/perm https://github.com/eka2513/CommentViewerJ", "");
 			} catch (CommentNotSendException ignore) {
 				ignore.printStackTrace();
@@ -46,6 +49,22 @@ public class ChukeiRainbowPlugin extends AbstractCommentViewerPlugin {
 	@Override
 	public void commentResultReceived(PluginCommentEvent e) {
 		System.out.println(String.format("=== no%s chatresult is %s", e.getResult().getNo(), e.getResult().getStatus()));
+	}
+
+	/**
+	 * loopCountを取得します。
+	 * @return loopCount
+	 */
+	public Integer getLoopCount() {
+	    return loopCount;
+	}
+
+	/**
+	 * loopCountを設定します。
+	 * @param loopCount loopCount
+	 */
+	public void setLoopCount(Integer loopCount) {
+	    this.loopCount = loopCount;
 	}
 
 }

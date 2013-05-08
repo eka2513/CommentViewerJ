@@ -12,6 +12,16 @@ public class NicoRequestUtil extends RequestUtil {
 		super();
 	}
 
+	@Override
+	public String get(String urlString) {
+		return super.get(urlString);
+	}
+
+	@Override
+	public String post(String urlString, String postData) {
+		return super.post(urlString, postData);
+	}
+
 	public NicoRequestUtil(String cookieString) {
 		super();
 		setCookieString(cookieString);

@@ -1,7 +1,5 @@
 package jp.co.nicovideo.eka2513.commentviewerj.main;
 
-import gnu.getopt.Getopt;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +20,6 @@ import jp.co.nicovideo.eka2513.commentviewerj.util.NicoRequestUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.PluginUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.SerializerUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.XMLUtil;
-import jp.nicovideo.eka2513.cookiegetter4j.cookie.NicoCookieManager;
-import jp.nicovideo.eka2513.cookiegetter4j.cookie.NicoCookieManagerFactory;
 import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
 public abstract class AbstractCommentViewer implements CommentEventListener, PluginSendEventListener {
@@ -83,13 +79,14 @@ public abstract class AbstractCommentViewer implements CommentEventListener, Plu
 	private Integer calcActive() {
 		Long now = System.currentTimeMillis();
 		Long tenminago = now - 60*10*1000;
-		//10分以上経過したキャッシュは消す
+		int active = 0;
+		//10分以上経過したキャッシュ以外の件数を取得
 		for (String key : activeCache.keySet()) {
-			if (activeCache.get(key) < tenminago) {
-				activeCache.remove(key);
+			if (activeCache.get(key) >= tenminago) {
+				active++;
 			}
 		}
-		return activeCache.size();
+		return active;
 	}
 
 	/**

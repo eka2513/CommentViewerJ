@@ -3,11 +3,11 @@ package jp.co.nicovideo.eka2513.commentviewerj.plugin;
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ThreadMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
-import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
 import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
 public class SimplePlugin extends AbstractCommentViewerPlugin {
 
+	@SuppressWarnings("unused")
 	private ThreadMessage threadMessage;
 
 	public SimplePlugin(){
@@ -40,12 +40,14 @@ public class SimplePlugin extends AbstractCommentViewerPlugin {
 						e.getActive()
 				)
 		);
+		System.err.flush();
+/*
 		if (threadMessage == null)
 			return;
 		Integer lastNo = Integer.valueOf(threadMessage.getLast_res());
 		if (Integer.valueOf(e.getMessage().getNo()) == lastNo) {
 			try {
-				sendComment("184", "184でコメント" + System.currentTimeMillis());
+//				sendComment("184", "184でコメント" + System.currentTimeMillis());
 //				sendComment("yellow big", "BIG文字でコメント");
 //				sendComment("yellow big 184", "BIG文字でコメント");
 //				sendBSPComment("184", "ああああああ", "BSPBSP", "niconicowhite");
@@ -55,6 +57,7 @@ public class SimplePlugin extends AbstractCommentViewerPlugin {
 				ignore.printStackTrace();
 			}
 		}
+*/
 	}
 
 	@Override

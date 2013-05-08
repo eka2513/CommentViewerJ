@@ -108,10 +108,13 @@ public class CommentThread extends Thread implements CommentViewerConstants {
 					    commentEventListener.comReceived(new CommentEvent(this, tag));
 					}
 				}
+				Thread.sleep(100);
 			}
 		} catch (IOException e) {
 			System.err.println("parameters");
-			System.err.println("parameters");
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		} finally {
 			stop = true;

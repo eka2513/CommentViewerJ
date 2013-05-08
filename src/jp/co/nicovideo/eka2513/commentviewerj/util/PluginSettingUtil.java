@@ -14,8 +14,10 @@ import jp.co.nicovideo.eka2513.commentviewerj.plugin.ChukeiRainbowPlugin;
 public class PluginSettingUtil<T> {
 
 	public static void main(String[] args) {
-		new PluginSettingUtil<ChukeiRainbowPlugin>().save(new ChukeiRainbowPlugin());
-		ChukeiRainbowPlugin obj = new PluginSettingUtil<ChukeiRainbowPlugin>().load(
+		ChukeiRainbowPlugin plugin = new ChukeiRainbowPlugin();
+		plugin.setLoopCount(21);
+		new PluginSettingUtil<ChukeiRainbowPlugin>().save(plugin);
+		plugin = new PluginSettingUtil<ChukeiRainbowPlugin>().load(
 			CommentViewerConstants.PLUGIN_XML_DIR + ChukeiRainbowPlugin.class.getName() + ".xml"
 		);
 	}
