@@ -38,8 +38,8 @@ public class PluginSettingUtil<T> {
 
 	/**
 	 * インスタンスをxmlからロードします
-	 * @param clazz
-	 * @return
+	 * @param filename ファイル名
+	 * @return インスタンス
 	 */
 	public T load(String filename) {
 		try {

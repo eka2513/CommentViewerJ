@@ -1,24 +1,22 @@
 package jp.co.nicovideo.eka2513.commentviewerj.plugin;
 
-import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginSendEvent;
-import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
-import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.PluginSendEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
 
 
-public abstract class AbstractCommentViewerPlugin implements CommetViewerPlugin {
+public abstract class CommentViewerPluginBase implements CommetViewerPlugin {
 
 	private PluginSendEventListener listener;
 
-	public AbstractCommentViewerPlugin() {
+	public CommentViewerPluginBase() {
 	}
 
 	/**
 	 * コメントを送信します
-	 * @param comment
-	 * @throws CommentNotSendException
+	 * @param mail mail
+	 * @param comment comment
+	 * @throws CommentNotSendException CommentNotSendException
 	 */
 	protected final void sendComment(String mail, String comment) throws CommentNotSendException {
 		listener.sendComment(new PluginSendEvent(this, mail, comment, null));
@@ -26,9 +24,10 @@ public abstract class AbstractCommentViewerPlugin implements CommetViewerPlugin 
 
 	/**
 	 * 運営コメントを送信します
-	 * @param comment
-	 * @param handle
-	 * @throws CommentNotSendException
+	 * @param mail mail
+	 * @param comment comment
+	 * @param handle handle
+	 * @throws CommentNotSendException CommentNotSendException
 	 */
 	protected final void sendUneiComment(String mail, String comment, String handle) throws CommentNotSendException {
 		listener.sendUneiComment(new PluginSendEvent(this, mail, comment, null));
@@ -36,9 +35,11 @@ public abstract class AbstractCommentViewerPlugin implements CommetViewerPlugin 
 
 	/**
 	 * 運営コメントでなんちゃってBSPコメントを送信します
-	 * @param comment
-	 * @param handle
-	 * @throws CommentNotSendException
+	 * @param mail mail
+	 * @param comment comment
+	 * @param handle handle
+	 * @param bspColor bspColor
+	 * @throws CommentNotSendException CommentNotSendException
 	 */
 	protected final void sendUneiBSPComment(String mail, String comment, String handle, String bspColor) throws CommentNotSendException {
 		listener.sendUneiBSPComment(new PluginSendEvent(this, mail, comment, handle, bspColor));
@@ -46,9 +47,11 @@ public abstract class AbstractCommentViewerPlugin implements CommetViewerPlugin 
 
 	/**
 	 * BSPコメントを送信します
-	 * @param comment
-	 * @param handle
-	 * @throws CommentNotSendException
+	 * @param mail mail
+	 * @param comment comment
+	 * @param handle handle
+	 * @param bspColor bspColor
+	 * @throws CommentNotSendException CommentNotSendException
 	 */
 	protected final void sendBSPComment(String mail, String comment, String handle, String bspColor) throws CommentNotSendException {
 		listener.sendBSPComment(new PluginSendEvent(this, mail, comment, handle, bspColor));

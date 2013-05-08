@@ -4,6 +4,11 @@ import java.util.EventObject;
 
 import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
+/**
+ * PluginSendEvent
+ * @author eka2513
+ *
+ */
 public class PluginSendEvent extends EventObject {
 
 	private static final long serialVersionUID = 4187203001795808093L;
@@ -13,6 +18,13 @@ public class PluginSendEvent extends EventObject {
 	private String mail;
 	private String bspColor;
 
+	/**
+	 * コンストラクタ
+	 * @param source source
+	 * @param mail mail
+	 * @param comment comment
+	 * @param handle handle
+	 */
 	public PluginSendEvent(Object source, String mail, String comment, String handle) {
 		super(source);
 		this.bspColor = "niconicowhite";
@@ -21,6 +33,14 @@ public class PluginSendEvent extends EventObject {
 		this.comment = comment;
 	}
 
+	/**
+	 * コンストラクタ
+	 * @param source source
+	 * @param mail mail
+	 * @param comment comment
+	 * @param handle handle
+	 * @param bspColor bspColor
+	 */
 	public PluginSendEvent(Object source, String mail, String comment, String handle, String bspColor) {
 		super(source);
 		this.bspColor = bspColor;

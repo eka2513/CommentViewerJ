@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 import jp.co.nicovideo.eka2513.commentviewerj.constants.CommentViewerConstants;
@@ -34,9 +33,12 @@ public class CommentThread extends Thread implements CommentViewerConstants {
 
 //	private List<AbstractCommentViewerPlugin> plugins;
 
-	/** コンストラクター
-	 * @throws IOException
-	 * @throws UnknownHostException
+
+	/**
+	 * コンストラクター
+	 * @param addr addr
+	 * @param port port
+	 * @param threadId threadId
 	 */
 	public CommentThread(String addr, String port, String threadId) {
 		try {
@@ -52,19 +54,19 @@ public class CommentThread extends Thread implements CommentViewerConstants {
 
 	/**
 	 * コメントを送信します
-	 * @param mail
-	 * @param comment
-	 * @param cookie
-	 * @param lastCommentNo
-	 * @param playerstatus
-	 * @param threadMessage
+	 * @param mail mail
+	 * @param comment comment
+	 * @param cookie cookie
+	 * @param lastCommentNo lastCommentNo
+	 * @param playerstatus playerstatus
+	 * @param threadMessage threadMessage
 	 */
 	public void sendComment(String mail, String comment, String cookie, Integer lastCommentNo, Map<String, String> playerstatus, ThreadMessage threadMessage) {
 		NicoRequestUtil util = new NicoRequestUtil();
 		util.setCookieString(cookie);
 		Integer block = lastCommentNo / 100;
 		String postKey = util.getPostKey(threadId, block.toString());
-		Integer now = Integer.valueOf(String.valueOf(System.currentTimeMillis()/1000));
+		Integer now = Integer.valueOf(String.valueOf(System.currentTimeMillis() / 1000));
 		String vpos = calcVpos(playerstatus.get(BASE_TIME), now.toString());
 		String chatXml =
 				String.format(
@@ -91,7 +93,7 @@ public class CommentThread extends Thread implements CommentViewerConstants {
 			sock = new Socket(addr, StringUtil.inull2Val(port));
 			out = new PrintWriter(sock.getOutputStream());
 			in = sock.getInputStream();
-			br = new BufferedReader(new InputStreamReader(in,"utf-8"));
+			br = new BufferedReader(new InputStreamReader(in, "utf-8"));
 			out.write(threadXml);
 	        out.flush();
 
@@ -112,7 +114,7 @@ public class CommentThread extends Thread implements CommentViewerConstants {
 			}
 		} catch (IOException e) {
 			System.err.println("parameters");
-			System.err.println(String.format("addr=%s, port=%s, thread=%s", addr,port,threadId));
+			System.err.println(String.format("addr=%s, port=%s, thread=%s", addr, port, threadId));
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -197,7 +199,7 @@ public class CommentThread extends Thread implements CommentViewerConstants {
 
 	/**
 	 * commentEventListenerを設定します。
-	 * @param commentEventListener commentEventListener
+	 * @param listener commentEventListener
 	 */
 	public void setCommentEventListener(CommentEventListener listener) {
 	    this.commentEventListener = listener;

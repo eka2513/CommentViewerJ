@@ -18,7 +18,7 @@ import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.CommentEventListener
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.PluginSendEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.TimerPluginEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
-import jp.co.nicovideo.eka2513.commentviewerj.plugin.AbstractCommentViewerPlugin;
+import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
 import jp.co.nicovideo.eka2513.commentviewerj.plugin.TimerPluginTask;
 import jp.co.nicovideo.eka2513.commentviewerj.util.CommentThread;
 import jp.co.nicovideo.eka2513.commentviewerj.util.CommentUtil;
@@ -40,7 +40,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 	private Map<String, Long> activeCache;
 	private HashMap<String, String> handleNameCache;
 
-	private List<AbstractCommentViewerPlugin> plugins;
+	private List<CommentViewerPluginBase> plugins;
 
 	private Timer timer;
 
@@ -67,7 +67,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 //		plugins.add(this);
 		plugins = PluginUtil.loadPlugins();
 		//イベントリスナを登録
-		for (AbstractCommentViewerPlugin p : plugins) {
+		for (CommentViewerPluginBase p : plugins) {
 			p.addListener(this);
 		}
 		comThread = new CommentThread(
@@ -107,6 +107,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 
 	/**
 	 * コメントサーバ接続のスレッドからxml受信時に呼ばれるメソッド
+	 * @param e CommentEvent
 	 */
 	@Override
 	public void comReceived(CommentEvent e) {
@@ -123,8 +124,8 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 				ThreadMessage message = XMLUtil.getThreadMessage(tag);
 				threadMessage = message;
 				PluginThreadEvent event = new PluginThreadEvent(this, message);
-				for (AbstractCommentViewerPlugin p : plugins) {
-					p.threadReceived(event);
+				for (CommentViewerPluginBase p : plugins) {
+					p.threadReceived(this, event);
 				}
 			} else if (tag.startsWith("<chat_result")) {
 				//chat_resultタグ
@@ -139,8 +140,8 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 				buf.setLength(0);
 				ChatMessage message = XMLUtil.getChatMessage(tag);
 				//放送主・運営はアクティブと初コメの判定をしない
-				if (!message.getPremium().equals(PremiumConstants.BROADCASTER.toString()) &&
-					!message.getPremium().equals(PremiumConstants.SYSTEM_UNEI.toString())) {
+				if (!message.getPremium().equals(PremiumConstants.BROADCASTER.toString())
+						&& !message.getPremium().equals(PremiumConstants.SYSTEM_UNEI.toString())) {
 					if (!activeCache.containsKey(message.getUser_id())) {
 						//初コメ
 						message.setFirstComment(true);
@@ -162,15 +163,15 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 						m.setNo(String.valueOf(lastCommentNo+i));
 						m.setNgComment(true);
 						PluginCommentEvent event = new PluginCommentEvent(this, m);
-						for (AbstractCommentViewerPlugin p : plugins) {
-							p.commentReceived(event);
+						for (CommentViewerPluginBase p : plugins) {
+							p.commentReceived(this, event);
 						}
 					}
 				}
 				lastCommentNo = StringUtil.inull2Val(message.getNo());
 				PluginCommentEvent event = new PluginCommentEvent(this, message, calcActive());
-				for (AbstractCommentViewerPlugin p : plugins) {
-					p.commentReceived(event);
+				for (CommentViewerPluginBase p : plugins) {
+					p.commentReceived(this, event);
 				}
 			}
 //			System.out.println(tag);
@@ -186,13 +187,14 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 		String vpos = CommentUtil.calcVpos(baseTime, e.getCurrentTime().toString());
 		e.setVpos(Integer.valueOf(vpos));
 		//プラグインのtickメソッドを呼び出す
-		for (AbstractCommentViewerPlugin plugin : plugins) {
-			plugin.tick(e);
+		for (CommentViewerPluginBase plugin : plugins) {
+			plugin.tick(this, e);
 		}
 	}
 	/**
 	 * プラグインからコールされるコメント送信メソッド。
-	 * @param PluginSendEvent
+	 * @param event event
+	 * @throws CommentNotSendException CommentNotSendException
 	 */
 	@Override
 	public void sendComment(PluginSendEvent event) throws CommentNotSendException {
@@ -207,7 +209,8 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 
 	/**
 	 * プラグインからコールされる運営コメント送信メソッド。
-	 * @param PluginSendEvent
+	 * @param event PluginSendEvent
+	 * @throws CommentNotSendException CommentNotSendException
 	 */
 	@Override
 	public void sendUneiComment(PluginSendEvent event) throws CommentNotSendException {
@@ -219,7 +222,8 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 
 	/**
 	 * プラグインからコールされるなんちゃってBSP送信メソッド。
-	 * @param PluginSendEvent
+	 * @param event PluginSendEvent
+	 * @throws CommentNotSendException CommentNotSendException
 	 */
 	@Override
 	public void sendUneiBSPComment(PluginSendEvent event) throws CommentNotSendException {
@@ -240,7 +244,8 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 
 	/**
 	 * プラグインからコールされるBSP送信メソッド。
-	 * @param PluginSendEvent
+	 * @param event PluginSendEvent
+	 * @throws CommentNotSendException CommentNotSendException
 	 */
 	@Override
 	public void sendBSPComment(PluginSendEvent event) throws CommentNotSendException {

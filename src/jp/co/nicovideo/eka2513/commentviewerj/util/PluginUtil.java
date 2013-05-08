@@ -20,7 +20,7 @@ import javax.xml.xpath.XPathFactory;
 
 import jp.co.nicovideo.eka2513.commentviewerj.constants.CommentViewerConstants;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentViewerException;
-import jp.co.nicovideo.eka2513.commentviewerj.plugin.AbstractCommentViewerPlugin;
+import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -32,11 +32,11 @@ public class PluginUtil {
 		PluginUtil.loadPlugins();
 	}
 
-	public static List<AbstractCommentViewerPlugin> loadPlugins() {
+	public static List<CommentViewerPluginBase> loadPlugins() {
 		FileInputStream fis = null;
 		InputStreamReader isr = null;
 		BufferedReader br = null;
-		List<AbstractCommentViewerPlugin> list = new ArrayList<AbstractCommentViewerPlugin>();
+		List<CommentViewerPluginBase> list = new ArrayList<CommentViewerPluginBase>();
 		try {
 			String filename = CommentViewerConstants.PLUGIN_XML_DIR + "plugins.xml";
 			fis = new FileInputStream(new File(filename));
@@ -59,7 +59,7 @@ public class PluginUtil {
 			NodeList entries = (NodeList) xpath.evaluate(location, doc,
 					XPathConstants.NODESET);
 			for (int i = 0; i < entries.getLength(); i++) {
-				AbstractCommentViewerPlugin p = new PluginSettingUtil<AbstractCommentViewerPlugin>().load(
+				CommentViewerPluginBase p = new PluginSettingUtil<CommentViewerPluginBase>().load(
 						CommentViewerConstants.PLUGIN_XML_DIR + entries.item(i).getNodeValue() + ".xml");
 				list.add(p);
 			}

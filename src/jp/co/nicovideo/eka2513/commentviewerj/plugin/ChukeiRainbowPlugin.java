@@ -7,8 +7,9 @@ import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
+import jp.co.nicovideo.eka2513.commentviewerj.main.CommentViewerBase;
 
-public class ChukeiRainbowPlugin extends AbstractCommentViewerPlugin {
+public class ChukeiRainbowPlugin extends CommentViewerPluginBase {
 
 	private ThreadMessage threadMessage;
 
@@ -19,13 +20,13 @@ public class ChukeiRainbowPlugin extends AbstractCommentViewerPlugin {
 	}
 
 	@Override
-	public void threadReceived(PluginThreadEvent e) {
+	public void threadReceived(CommentViewerBase source, PluginThreadEvent e) {
 		//do nothing
 		threadMessage = e.getMessage();
 	}
 
 	@Override
-	public void commentReceived(PluginCommentEvent e) {
+	public void commentReceived(CommentViewerBase source, PluginCommentEvent e) {
 		if (threadMessage == null)
 			return;
 		Integer lastNo = Integer.valueOf(threadMessage.getLast_res());
@@ -48,12 +49,12 @@ public class ChukeiRainbowPlugin extends AbstractCommentViewerPlugin {
 	}
 
 	@Override
-	public void commentResultReceived(PluginCommentEvent e) {
+	public void commentResultReceived(CommentViewerBase source, PluginCommentEvent e) {
 		System.out.println(String.format("=== no%s chatresult is %s", e.getResult().getNo(), e.getResult().getStatus()));
 	}
 
 	@Override
-	public void tick(TimerPluginEvent e) {
+	public void tick(CommentViewerBase source, TimerPluginEvent e) {
 		// do nothing
 	}
 	/**

@@ -33,7 +33,7 @@ public class RequestUtil {
 	protected String get(String urlString) {
 		try {
 			URL url = new URL(urlString);
-			HttpURLConnection urlconn = (HttpURLConnection)url.openConnection();
+			HttpURLConnection urlconn = (HttpURLConnection) url.openConnection();
 			urlconn.setRequestMethod("GET");
 			urlconn.setInstanceFollowRedirects(true);
 			urlconn.setRequestProperty("Accept-Language", "ja;q=0.7,en;q=0.3");
@@ -72,7 +72,7 @@ public class RequestUtil {
 	protected String post(String urlString, String postData) {
 		try {
 			URL url = new URL(urlString);
-			HttpURLConnection urlconn = (HttpURLConnection)url.openConnection();
+			HttpURLConnection urlconn = (HttpURLConnection) url.openConnection();
 			urlconn.setRequestMethod("POST");
 			urlconn.setDoOutput(true);
 			urlconn.setInstanceFollowRedirects(true);
@@ -119,7 +119,7 @@ public class RequestUtil {
 		Map<String, String> map = new HashMap<String, String>();
 		try {
 			URL url = new URL(urlString);
-			HttpURLConnection urlconn = (HttpURLConnection)url.openConnection();
+			HttpURLConnection urlconn = (HttpURLConnection) url.openConnection();
 			urlconn.setRequestMethod("GET");
 			urlconn.setDoOutput(true);
 			urlconn.setInstanceFollowRedirects(true);
@@ -134,7 +134,7 @@ public class RequestUtil {
 
 			Map<String, List<String>> resHeaders = urlconn.getHeaderFields();
 			List<String> resHeader = new ArrayList<String>();
-			for(Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
+			for (Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
 				String key       = entry.getKey();
 				List<String> val = entry.getValue();
 				for (String v : val) {
@@ -174,7 +174,7 @@ public class RequestUtil {
 		Map<String, String> map = new HashMap<String, String>();
 		try {
 			URL url = new URL(urlString);
-			HttpURLConnection urlconn = (HttpURLConnection)url.openConnection();
+			HttpURLConnection urlconn = (HttpURLConnection) url.openConnection();
 			urlconn.setRequestMethod("POST");
 			urlconn.setDoOutput(true);
 			urlconn.setInstanceFollowRedirects(true);
@@ -193,7 +193,7 @@ public class RequestUtil {
 
 			Map<String, List<String>> resHeaders = urlconn.getHeaderFields();
 			List<String> resHeader = new ArrayList<String>();
-			for(Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
+			for (Map.Entry<String, List<String>> entry : resHeaders.entrySet()) {
 				String key       = entry.getKey();
 				List<String> val = entry.getValue();
 				for (String v : val) {

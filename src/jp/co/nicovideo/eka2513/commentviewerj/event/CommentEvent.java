@@ -2,15 +2,25 @@ package jp.co.nicovideo.eka2513.commentviewerj.event;
 
 import java.util.EventObject;
 
+/**
+ * コメントイベント
+ * @author eka2513
+ */
 public class CommentEvent extends EventObject {
 
 	private static final long serialVersionUID = -6015456548879569723L;
 
+	/** コメントサーバから返されたxml */
 	private String xml;
 
-	public CommentEvent(Object source, String str) {
+	/**
+	 * コンストラクタ
+	 * @param source source
+	 * @param xml xml
+	 */
+	public CommentEvent(Object source, String xml) {
 		super(source);
-		xml = str;
+		this.xml = xml;
 	}
 
 	/**

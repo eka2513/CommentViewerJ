@@ -2,6 +2,11 @@ package jp.co.nicovideo.eka2513.commentviewerj.dto;
 
 import java.io.Serializable;
 
+/**
+ * コメント情報クラス.基本的にはchatタグ。
+ * NGコメントの場合は、ngComment=trueとNoしかセットされないので注意
+ * @author eka2513
+ */
 public class ChatMessage implements Serializable {
 
 	private static final long serialVersionUID = -5381832803254738959L;
@@ -28,7 +33,7 @@ public class ChatMessage implements Serializable {
 
 	/**
 	 * vposをhh:mi:ss形式で返します
-	 * @return
+	 * @return vpos
 	 */
 	public String getPrintableVpos() {
 		Integer pos = Integer.valueOf(Integer.valueOf(vpos)/100);

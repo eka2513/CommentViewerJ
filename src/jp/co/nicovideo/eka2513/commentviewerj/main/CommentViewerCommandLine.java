@@ -8,7 +8,7 @@ public class CommentViewerCommandLine extends CommentViewerBase {
 
 	/**
 	 * mainメソッド。パラメータの取得と#alert()の呼び出し
-	 * @param args
+	 * @param args パラメータ
 	 */
 	public static void main(String[] args) {
 

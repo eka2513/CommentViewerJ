@@ -52,8 +52,8 @@ public class NicoRequestUtil extends RequestUtil {
 
 	/**
 	 * postKeyを取得します
-	 * @param thread
-	 * @param block
+	 * @param thread スレッドID
+	 * @param block コメント番号を100で割った数字
 	 * @return
 	 */
 	public String getPostKey(String thread, String block) {
@@ -76,12 +76,12 @@ public class NicoRequestUtil extends RequestUtil {
 
 	/**
 	 * 運営コメントを送信します
-	 * @param lv
-	 * @param mail
-	 * @param comment
-	 * @param handle
-	 * @param token
-	 * @return
+	 * @param lv lv
+	 * @param mail mail
+	 * @param comment comment
+	 * @param handle handle
+	 * @param token token
+	 * @return 送信結果
 	 */
 	public boolean sendBroadcastComment(String lv, String mail, String comment, String handle, String token) {
 		try {
@@ -102,11 +102,11 @@ public class NicoRequestUtil extends RequestUtil {
 
 	/**
 	 * BSPコメントを送信します
-	 * @param lv
-	 * @param comment
-	 * @param color
-	 * @param handle
-	 * @param presscastToken
+	 * @param lv lv
+	 * @param comment comment
+	 * @param color color
+	 * @param handle handle
+	 * @param presscastToken presscastToken
 	 * @return
 	 */
 	public boolean sendBspComment(String lv, String comment, String color, String handle, String presscastToken) {

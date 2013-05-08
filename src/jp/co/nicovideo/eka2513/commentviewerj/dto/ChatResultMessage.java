@@ -2,6 +2,11 @@ package jp.co.nicovideo.eka2513.commentviewerj.dto;
 
 import java.io.Serializable;
 
+/**
+ * コメント送信後に帰ってくるchat_result格納クラス.
+ * @author eka2513
+ *
+ */
 public class ChatResultMessage implements Serializable {
 
 	private static final long serialVersionUID = 2746829917751817328L;

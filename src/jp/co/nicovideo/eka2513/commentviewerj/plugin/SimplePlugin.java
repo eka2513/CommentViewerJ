@@ -4,9 +4,10 @@ import jp.co.nicovideo.eka2513.commentviewerj.dto.ThreadMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
+import jp.co.nicovideo.eka2513.commentviewerj.main.CommentViewerBase;
 import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
-public class SimplePlugin extends AbstractCommentViewerPlugin {
+public class SimplePlugin extends CommentViewerPluginBase {
 
 	@SuppressWarnings("unused")
 	private ThreadMessage threadMessage;
@@ -20,7 +21,7 @@ public class SimplePlugin extends AbstractCommentViewerPlugin {
 	}
 
 	@Override
-	public void threadReceived(PluginThreadEvent e) {
+	public void threadReceived(CommentViewerBase source, PluginThreadEvent e) {
 		threadMessage = e.getMessage();
 		System.err.println(
 				String.format("%s\t%s",
@@ -31,7 +32,7 @@ public class SimplePlugin extends AbstractCommentViewerPlugin {
 	}
 
 	@Override
-	public void commentReceived(PluginCommentEvent e) {
+	public void commentReceived(CommentViewerBase source, PluginCommentEvent e) {
 		if (!e.getMessage().isNgComment()) {
 			if (e.getMessage().isFirstComment()) {
 				System.err.print("初");
@@ -78,12 +79,12 @@ public class SimplePlugin extends AbstractCommentViewerPlugin {
 	}
 
 	@Override
-	public void commentResultReceived(PluginCommentEvent e) {
+	public void commentResultReceived(CommentViewerBase source, PluginCommentEvent e) {
 		System.out.println(String.format("=== no%s chatresult is %s", e.getResult().getNo(), e.getResult().getStatus()));
 	}
 
 	@Override
-	public void tick(TimerPluginEvent e) {
+	public void tick(CommentViewerBase source, TimerPluginEvent e) {
 		System.out.println(
 				String.format(
 						"timer ticked, vpos=%s currentTime=%d systemCurrentTime=%d",

@@ -3,7 +3,7 @@ package jp.co.nicovideo.eka2513.commentviewerj.dto;
 import java.io.Serializable;
 
 /**
- * コメントサーバから送られたthreadタグを保持します
+ * threadタグ格納クラス.
  * @author eka2513
  */
 public class ThreadMessage implements Serializable {

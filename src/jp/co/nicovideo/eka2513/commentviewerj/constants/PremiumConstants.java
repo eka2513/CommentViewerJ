@@ -1,5 +1,10 @@
 package jp.co.nicovideo.eka2513.commentviewerj.constants;
 
+/**
+ * メッセージ受信時に受け取るchatタグのpremium属性用の定数.
+ * @author eka2513
+ *
+ */
 public interface PremiumConstants {
 	/** プレ垢 */
 	public static final Integer PREMIUM = 1;

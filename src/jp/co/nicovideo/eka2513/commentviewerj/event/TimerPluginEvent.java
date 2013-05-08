@@ -2,6 +2,10 @@ package jp.co.nicovideo.eka2513.commentviewerj.event;
 
 import java.util.EventObject;
 
+/**
+ * タイマー駆動用のイベント
+ * @author eka2513
+ */
 public class TimerPluginEvent extends EventObject {
 
 	private static final long serialVersionUID = -7055437277249840356L;
@@ -12,14 +16,32 @@ public class TimerPluginEvent extends EventObject {
 	/** vpos */
 	private Integer vpos;
 
+	/**
+	 * コンストラクタ
+	 * @param source source
+	 * @param currentTime currentTime
+	 */
 	public TimerPluginEvent(Object source, Long currentTime) {
 		super(source);
 		this.currentTime = currentTime;
 	}
+
+	/**
+	 * コンストラクタ
+	 * @param source source
+	 * @param vpos vpos
+	 */
 	public TimerPluginEvent(Object source, Integer vpos) {
 		super(source);
 		this.vpos = vpos;
 	}
+
+	/**
+	 * コンストラクタ
+	 * @param source source
+	 * @param vpos vpos
+	 * @param currentTime currentTime
+ 	 */
 	public TimerPluginEvent(Object source, Integer vpos, Long currentTime) {
 		super(source);
 		this.vpos = vpos;
