@@ -28,7 +28,7 @@ import jp.co.nicovideo.eka2513.commentviewerj.util.SerializerUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.XMLUtil;
 import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
-public abstract class AbstractCommentViewer implements CommentEventListener, PluginSendEventListener, TimerPluginEventListener {
+public class CommentViewerBase implements CommentEventListener, PluginSendEventListener, TimerPluginEventListener {
 
 	private String cookie;
 	private String browser;

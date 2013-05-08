@@ -4,7 +4,7 @@ import gnu.getopt.Getopt;
 import jp.nicovideo.eka2513.cookiegetter4j.cookie.NicoCookieManager;
 import jp.nicovideo.eka2513.cookiegetter4j.cookie.NicoCookieManagerFactory;
 
-public class CommentViewerCommandLine extends AbstractCommentViewer {
+public class CommentViewerCommandLine extends CommentViewerBase {
 
 	/**
 	 * mainメソッド。パラメータの取得と#alert()の呼び出し
