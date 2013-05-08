@@ -112,6 +112,7 @@ public class CommentThread extends Thread implements CommentViewerConstants {
 			}
 		} catch (IOException e) {
 			System.err.println("parameters");
+			System.err.println(String.format("addr=%s, port=%s, thread=%s", addr,port,threadId));
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -134,8 +135,8 @@ public class CommentThread extends Thread implements CommentViewerConstants {
 		}
 	}
 
-	public String calcVpos(String startTime, String time) {
-		return String.valueOf((Long.valueOf(time) - Long.valueOf(startTime))*100);
+	private String calcVpos(String startTime, String time) {
+		return CommentUtil.calcVpos(startTime, time);
 	}
 
 	public void exit() {

@@ -20,6 +20,11 @@ public class PluginCommentEvent extends EventObject {
 		this.message = message;
 	}
 
+	public PluginCommentEvent(Object source, ChatMessage message) {
+		super(source);
+		this.message = message;
+	}
+
 	public PluginCommentEvent(Object source, ChatResultMessage message) {
 		super(source);
 		this.result = message;

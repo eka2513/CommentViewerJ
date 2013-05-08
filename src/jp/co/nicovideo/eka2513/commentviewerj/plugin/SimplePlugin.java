@@ -3,6 +3,7 @@ package jp.co.nicovideo.eka2513.commentviewerj.plugin;
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ThreadMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
+import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
 import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
 public class SimplePlugin extends AbstractCommentViewerPlugin {
@@ -31,15 +32,31 @@ public class SimplePlugin extends AbstractCommentViewerPlugin {
 
 	@Override
 	public void commentReceived(PluginCommentEvent e) {
-		System.err.println(
-				String.format("%s\t%s\t%s\thandle=%s\tactive=%d",
-						e.getMessage().getNo(),
-						e.getMessage().getPrintableVpos(),
-						e.getMessage().getText(),
-						StringUtil.null2Val(e.getMessage().getHandleName()),
-						e.getActive()
-				)
-		);
+		if (!e.getMessage().isNgComment()) {
+			if (e.getMessage().isFirstComment()) {
+				System.err.print("初");
+			}
+			System.err.println(
+					String.format("%s\t%s\t%s\thandle=%s\tactive=%d\tp=%s",
+							e.getMessage().getNo(),
+							e.getMessage().getPrintableVpos(),
+							e.getMessage().getText(),
+							StringUtil.null2Val(e.getMessage().getHandleName()),
+							e.getActive(),
+							e.getMessage().getPremium()
+					)
+			);
+		} else {
+			System.err.println(
+					String.format("%s\t%s\t%s\thandle=%s\tactive=%d",
+							e.getMessage().getNo(),
+							"N/A",
+							"NGコメントです",
+							"NG",
+							0
+					)
+			);
+		}
 		System.err.flush();
 /*
 		if (threadMessage == null)
@@ -63,6 +80,19 @@ public class SimplePlugin extends AbstractCommentViewerPlugin {
 	@Override
 	public void commentResultReceived(PluginCommentEvent e) {
 		System.out.println(String.format("=== no%s chatresult is %s", e.getResult().getNo(), e.getResult().getStatus()));
+	}
+
+	@Override
+	public void tick(TimerPluginEvent e) {
+		System.out.println(
+				String.format(
+						"timer ticked, vpos=%s currentTime=%d systemCurrentTime=%d",
+						e.getVpos(),
+						e.getCurrentTime(),
+						System.currentTimeMillis()
+				)
+		);
+		// do nothing
 	}
 
 }

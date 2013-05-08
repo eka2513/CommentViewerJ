@@ -5,6 +5,7 @@ import java.util.Random;
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ThreadMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
+import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
 
 public class ChukeiRainbowPlugin extends AbstractCommentViewerPlugin {
@@ -51,6 +52,10 @@ public class ChukeiRainbowPlugin extends AbstractCommentViewerPlugin {
 		System.out.println(String.format("=== no%s chatresult is %s", e.getResult().getNo(), e.getResult().getStatus()));
 	}
 
+	@Override
+	public void tick(TimerPluginEvent e) {
+		// do nothing
+	}
 	/**
 	 * loopCountを取得します。
 	 * @return loopCount

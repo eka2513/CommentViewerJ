@@ -1,12 +1,14 @@
 package jp.co.nicovideo.eka2513.commentviewerj.plugin;
 
+import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginSendEvent;
-import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.PluginCommentEventListener;
+import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
+import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.PluginSendEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
 
 
-public abstract class AbstractCommentViewerPlugin implements PluginCommentEventListener {
+public abstract class AbstractCommentViewerPlugin implements CommetViewerPlugin {
 
 	private PluginSendEventListener listener;
 

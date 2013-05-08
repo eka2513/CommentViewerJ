@@ -17,6 +17,10 @@ public class ChatMessage implements Serializable {
 	private String locale;
 	private String score;
 	private String premium;
+	/** 初コメ */
+	private boolean firstComment;
+	/** NGコメ */
+	private boolean ngComment;
 	/** コテハン */
 	private String handleName;
 	/** コメント本文 */
@@ -189,6 +193,38 @@ public class ChatMessage implements Serializable {
 	public void setPremium(String premium) {
 	    this.premium = premium;
 	}
+	/**
+	 * 初コメを取得します。
+	 * @return 初コメ
+	 */
+	public boolean isFirstComment() {
+	    return firstComment;
+	}
+
+	/**
+	 * 初コメを設定します。
+	 * @param firstComment 初コメ
+	 */
+	public void setFirstComment(boolean firstComment) {
+	    this.firstComment = firstComment;
+	}
+
+	/**
+	 * NGコメを取得します。
+	 * @return NGコメ
+	 */
+	public boolean isNgComment() {
+	    return ngComment;
+	}
+
+	/**
+	 * NGコメを設定します。
+	 * @param ngComment NGコメ
+	 */
+	public void setNgComment(boolean ngComment) {
+	    this.ngComment = ngComment;
+	}
+
 	/**
 	 * コテハンを取得します。
 	 * @return コテハン
