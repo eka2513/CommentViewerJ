@@ -61,6 +61,9 @@ public class PluginUtil {
 			for (int i = 0; i < entries.getLength(); i++) {
 				CommentViewerPluginBase p = new PluginSettingUtil<CommentViewerPluginBase>().load(
 						CommentViewerConstants.PLUGIN_XML_DIR + entries.item(i).getNodeValue() + ".xml");
+				if (p == null) {
+					System.err.println(String.format("%sのロードに失敗しました", entries.item(i).getNodeValue()));
+				}
 				list.add(p);
 			}
 		} catch (ParserConfigurationException e) {

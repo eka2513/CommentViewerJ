@@ -8,15 +8,20 @@ import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
 import jp.co.nicovideo.eka2513.commentviewerj.main.CommentViewerBase;
+import jp.co.nicovideo.eka2513.commentviewerj.util.PluginSettingUtil;
 
 public class ChukeiRainbowPlugin extends CommentViewerPluginBase {
 
+	public static void main(String[] args) {
+		ChukeiRainbowPlugin plugin = new ChukeiRainbowPlugin();
+		plugin.setLoopCount(20);
+		new PluginSettingUtil<ChukeiRainbowPlugin>().save(plugin);
+	}
 	private ThreadMessage threadMessage;
 
-	private Integer loopCount;
+	private Integer loopCount = 10;
 
 	public ChukeiRainbowPlugin() {
-		loopCount = 20;
 	}
 
 	@Override
@@ -29,6 +34,8 @@ public class ChukeiRainbowPlugin extends CommentViewerPluginBase {
 	public void commentReceived(CommentViewerBase source, PluginCommentEvent e) {
 		if (threadMessage == null)
 			return;
+		if (e.getMessage().isNgComment())
+			return;
 		Integer lastNo = Integer.valueOf(threadMessage.getLast_res());
 		if (!e.getMessage().getPremium().equals("3") && Integer.valueOf(e.getMessage().getNo()) > lastNo) {
 			try {
@@ -40,8 +47,8 @@ public class ChukeiRainbowPlugin extends CommentViewerPluginBase {
 				for (int i=0; i<loopCount; i++) {
 					sendUneiComment("184", String.format("/chukei %s23 %s", Integer.toHexString(new Random().nextInt(4096)), e.getMessage().getText()), "");
 				}
-				sendUneiComment("184", "主は寝てますおもしろいのでコメントしてみてください", "");
-				sendUneiComment("184", "/perm https://github.com/eka2513/CommentViewerJ", "");
+//				sendUneiComment("184", "主は寝てますおもしろいのでコメントしてみてください", "");
+//				sendUneiComment("184", "/perm https://github.com/eka2513/CommentViewerJ", "");
 			} catch (CommentNotSendException ignore) {
 				ignore.printStackTrace();
 			}

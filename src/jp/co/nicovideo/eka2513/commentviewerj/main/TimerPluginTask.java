@@ -1,4 +1,4 @@
-package jp.co.nicovideo.eka2513.commentviewerj.plugin;
+package jp.co.nicovideo.eka2513.commentviewerj.main;
 
 import java.util.TimerTask;
 

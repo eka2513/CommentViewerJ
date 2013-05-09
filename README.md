@@ -11,9 +11,8 @@ Java製ニコ生コメントビューア
 [SimplePlugin](https://github.com/eka2513/CommentViewerJ/blob/master/src/jp/co/nicovideo/eka2513/commentviewerj/plugin/SimplePlugin.java)
 を参考にしてください。
 
-AbstractCommentViewerPluginを継承して作成します  
 コメント送信はスーパークラスのメソッドを呼んでください。  
-このクラスには[PluginCommentEventListener](https://github.com/eka2513/CommentViewerJ/blob/master/src/jp/co/nicovideo/eka2513/commentviewerj/eventlistener/PluginCommentEventListener.java)がimplementしてあります  
+
 現在は  
 
 	public void threadReceived(PluginThreadEvent e);
@@ -34,4 +33,6 @@ xmlのファイル名はみたまんまですが、_「パッケージ名.クラ
 
 _「パッケージ名.クラス名.xml」_ファイルの作成方法ですが
 XMLEncoderを使用して作成してください。  
-[PluginSettingUtil](https://github.com/eka2513/CommentViewerJ/blob/master/src/jp/co/nicovideo/eka2513/commentviewerj/util/PluginSettingUtil.java)でsaveメソッドを呼ぶことにより簡単に作成出来ます。
+[PluginSettingUtil](https://github.com/eka2513/CommentViewerJ/blob/master/src/jp/co/nicovideo/eka2513/commentviewerj/util/PluginSettingUtil.java)でsaveメソッドを呼ぶことにより簡単に作成出来ます。  
+[PluginSettingUtil](https://github.com/eka2513/CommentViewerJ/blob/master/src/jp/co/nicovideo/eka2513/commentviewerj/util/PluginSettingUtil.java)のmainメソッドを参考にしてください。  
+とは言ってもGUI付かないと多分イメージできる人が居なさそうですが・・・。

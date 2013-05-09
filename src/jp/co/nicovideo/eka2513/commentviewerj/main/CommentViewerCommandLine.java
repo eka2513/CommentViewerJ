@@ -1,6 +1,14 @@
 package jp.co.nicovideo.eka2513.commentviewerj.main;
 
 import gnu.getopt.Getopt;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import jp.co.nicovideo.eka2513.commentviewerj.dto.ChatMessage;
+import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
+import jp.co.nicovideo.eka2513.commentviewerj.event.PluginSendEvent;
+import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
 import jp.nicovideo.eka2513.cookiegetter4j.cookie.NicoCookieManager;
 import jp.nicovideo.eka2513.cookiegetter4j.cookie.NicoCookieManagerFactory;
 

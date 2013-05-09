@@ -8,6 +8,7 @@ import java.util.Timer;
 import jp.co.nicovideo.eka2513.commentviewerj.constants.CommentViewerConstants;
 import jp.co.nicovideo.eka2513.commentviewerj.constants.PremiumConstants;
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ChatMessage;
+import jp.co.nicovideo.eka2513.commentviewerj.dto.ChatResultMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ThreadMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.event.CommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
@@ -19,7 +20,6 @@ import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.PluginSendEventListe
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.TimerPluginEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
 import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
-import jp.co.nicovideo.eka2513.commentviewerj.plugin.TimerPluginTask;
 import jp.co.nicovideo.eka2513.commentviewerj.util.CommentThread;
 import jp.co.nicovideo.eka2513.commentviewerj.util.CommentUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.NicoRequestUtil;
@@ -87,7 +87,10 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 	}
 
 	public void disconnect() {
-		comThread.exit();
+		if (comThread != null)
+			comThread.exit();
+		if (timer != null)
+			timer.cancel();
 	}
 
 	private StringBuffer buf = new StringBuffer();
@@ -125,10 +128,17 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 				threadMessage = message;
 				PluginThreadEvent event = new PluginThreadEvent(this, message);
 				for (CommentViewerPluginBase p : plugins) {
+					//TODO 各プラグインの実行は別スレッドで。
 					p.threadReceived(this, event);
 				}
 			} else if (tag.startsWith("<chat_result")) {
 				//chat_resultタグ
+				//TODO まだXMLばらしてない
+				ChatResultMessage message = new ChatResultMessage();
+				PluginCommentEvent event = new PluginCommentEvent(this, message);
+				for (CommentViewerPluginBase p : plugins) {
+					p.commentResultReceived(this, event);
+				}
 				System.out.println(tag);
 			} else {
 				//chatタグ
@@ -174,7 +184,6 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 					p.commentReceived(this, event);
 				}
 			}
-//			System.out.println(tag);
 		}
 	}
 
@@ -258,6 +267,9 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 		}
 	}
 
+	public static void main(String[] args) {
+
+	}
 	/**
 	 * cookieを取得します。
 	 * @return cookie

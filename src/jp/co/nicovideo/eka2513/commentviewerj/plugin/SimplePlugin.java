@@ -5,6 +5,7 @@ import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.main.CommentViewerBase;
+import jp.co.nicovideo.eka2513.commentviewerj.util.PluginSettingUtil;
 import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
 public class SimplePlugin extends CommentViewerPluginBase {
@@ -12,12 +13,11 @@ public class SimplePlugin extends CommentViewerPluginBase {
 	@SuppressWarnings("unused")
 	private ThreadMessage threadMessage;
 
-	public SimplePlugin(){
-
+	public static void main(String[] args) {
+		new PluginSettingUtil<SimplePlugin>().save(new SimplePlugin());
 	}
 
-	public void foo(String s) {
-		System.out.println(s);
+	public SimplePlugin(){
 	}
 
 	@Override
@@ -85,14 +85,14 @@ public class SimplePlugin extends CommentViewerPluginBase {
 
 	@Override
 	public void tick(CommentViewerBase source, TimerPluginEvent e) {
-		System.out.println(
-				String.format(
-						"timer ticked, vpos=%s currentTime=%d systemCurrentTime=%d",
-						e.getVpos(),
-						e.getCurrentTime(),
-						System.currentTimeMillis()
-				)
-		);
+//		System.out.println(
+//				String.format(
+//						"timer ticked, vpos=%s currentTime=%d systemCurrentTime=%d",
+//						e.getVpos(),
+//						e.getCurrentTime(),
+//						System.currentTimeMillis()
+//				)
+//		);
 		// do nothing
 	}
 
