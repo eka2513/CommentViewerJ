@@ -1,14 +1,12 @@
 package jp.co.nicovideo.eka2513.commentviewerj.event;
 
-import java.util.EventObject;
-
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ThreadMessage;
 
 /**
  * threadタグ用のイベント
  * @author eka2513
  */
-public class PluginThreadEvent extends EventObject {
+public class PluginThreadEvent extends PluginEventBase {
 
 	private static final long serialVersionUID = 3851925236511663402L;
 

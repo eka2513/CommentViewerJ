@@ -80,7 +80,6 @@ public class SimplePlugin extends CommentViewerPluginBase {
 
 	@Override
 	public void commentResultReceived(CommentViewerBase source, PluginCommentEvent e) {
-		System.out.println(String.format("=== no%s chatresult is %s", e.getResult().getNo(), e.getResult().getStatus()));
 	}
 
 	@Override
@@ -96,4 +95,11 @@ public class SimplePlugin extends CommentViewerPluginBase {
 		// do nothing
 	}
 
+	@Override
+	public void connected(CommentViewerBase source) {
+	}
+
+	@Override
+	public void disconnected(CommentViewerBase source) {
+	}
 }

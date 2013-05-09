@@ -32,23 +32,24 @@ public class ChukeiRainbowPlugin extends CommentViewerPluginBase {
 
 	@Override
 	public void commentReceived(CommentViewerBase source, PluginCommentEvent e) {
+		//主コメ送信不可なら無視
+		if (!e.isBroadcaster())
+			return;
+		//threadタグを受信していなければ無視
 		if (threadMessage == null)
 			return;
+		//NGコメント分のオブジェクトは無視
 		if (e.getMessage().isNgComment())
+			return;
+		// /(スラッシュ)で始まるコメントは中継しない
+		if (e.getMessage().getText().startsWith("/"))
 			return;
 		Integer lastNo = Integer.valueOf(threadMessage.getLast_res());
 		if (!e.getMessage().getPremium().equals("3") && Integer.valueOf(e.getMessage().getNo()) > lastNo) {
 			try {
-//				sendComment("184", "184でコメント" + System.currentTimeMillis());
-//				sendComment("yellow big", "BIG文字でコメント");
-//				sendComment("yellow big 184", "BIG文字でコメント");
-//				sendBSPComment("184", "ああああああ", "BSPBSP", "niconicowhite");
-//				sendUneiBSPComment("184", "な ん ち ゃ っ て B S P コ メ ン ト", "BSP", "niconicowhite");
 				for (int i=0; i<loopCount; i++) {
 					sendUneiComment("184", String.format("/chukei %s23 %s", Integer.toHexString(new Random().nextInt(4096)), e.getMessage().getText()), "");
 				}
-//				sendUneiComment("184", "主は寝てますおもしろいのでコメントしてみてください", "");
-//				sendUneiComment("184", "/perm https://github.com/eka2513/CommentViewerJ", "");
 			} catch (CommentNotSendException ignore) {
 				ignore.printStackTrace();
 			}
@@ -62,8 +63,16 @@ public class ChukeiRainbowPlugin extends CommentViewerPluginBase {
 
 	@Override
 	public void tick(CommentViewerBase source, TimerPluginEvent e) {
-		// do nothing
 	}
+
+	@Override
+	public void connected(CommentViewerBase source) {
+	}
+
+	@Override
+	public void disconnected(CommentViewerBase source) {
+	}
+
 	/**
 	 * loopCountを取得します。
 	 * @return loopCount

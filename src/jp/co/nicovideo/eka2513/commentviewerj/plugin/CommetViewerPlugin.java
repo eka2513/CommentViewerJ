@@ -9,5 +9,7 @@ public interface CommetViewerPlugin {
 	public void threadReceived(CommentViewerBase source, PluginThreadEvent e);
 	public void commentReceived(CommentViewerBase source, PluginCommentEvent e);
 	public void commentResultReceived(CommentViewerBase source, PluginCommentEvent e);
+	public void connected(CommentViewerBase source);
+	public void disconnected(CommentViewerBase source);
 	public void tick(CommentViewerBase source, TimerPluginEvent e);
 }

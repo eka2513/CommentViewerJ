@@ -19,6 +19,12 @@ import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.CommentEventListener
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.PluginSendEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.TimerPluginEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
+import jp.co.nicovideo.eka2513.commentviewerj.main.thread.CommentReceivedRunnable;
+import jp.co.nicovideo.eka2513.commentviewerj.main.thread.CommentResultReceivedRunnable;
+import jp.co.nicovideo.eka2513.commentviewerj.main.thread.ConnectedRunnable;
+import jp.co.nicovideo.eka2513.commentviewerj.main.thread.DisconnectedRunnable;
+import jp.co.nicovideo.eka2513.commentviewerj.main.thread.ThreadReceivedRunnable;
+import jp.co.nicovideo.eka2513.commentviewerj.main.thread.TimerTickRunnable;
 import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
 import jp.co.nicovideo.eka2513.commentviewerj.util.CommentThread;
 import jp.co.nicovideo.eka2513.commentviewerj.util.CommentUtil;
@@ -30,9 +36,9 @@ import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
 public class CommentViewerBase implements CommentEventListener, PluginSendEventListener, TimerPluginEventListener {
 
-	private String cookie;
-	private String browser;
-	private String lv;
+	protected String cookie;
+	protected String browser;
+	protected String lv;
 
 	private Integer lastCommentNo = 0;
 
@@ -48,6 +54,33 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 	private Map<String, String> playerstatus;
 	private Map<String, String> publishstatus;
 	private String presscastToken;
+
+	/**
+	 * 放送主かどうかを返します
+	 * @return
+	 */
+	public boolean isBroadcaster() {
+		if (publishstatus.containsKey(CommentViewerConstants.STATUS))
+			return !publishstatus.get(CommentViewerConstants.STATUS).equals("fail");
+		return false;
+	}
+
+	/**
+	 * BSPかどうかを返します
+	 * @return
+	 */
+	public boolean isBSP() {
+		return (presscastToken != null);
+	}
+
+
+	/**
+	 * アクティブ人数を返します
+	 * @return アクティブ人数
+	 */
+	public Integer getActive() {
+		return activeCache.size();
+	}
 
 	protected void connect() {
 		//init active
@@ -86,8 +119,8 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 		timer.scheduleAtFixedRate(timerPluginTask, 1000, 1000);
 	}
 
-	public void disconnect() {
-		if (comThread != null)
+	protected void disconnect() {
+		if (comThread != null && comThread.isAlive())
 			comThread.exit();
 		if (timer != null)
 			timer.cancel();
@@ -109,7 +142,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 	}
 
 	/**
-	 * コメントサーバ接続のスレッドからxml受信時に呼ばれるメソッド
+	 * コメントサーバ接続のスレッドからxml受信時に呼ばれる
 	 * @param e CommentEvent
 	 */
 	@Override
@@ -128,18 +161,17 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 				threadMessage = message;
 				PluginThreadEvent event = new PluginThreadEvent(this, message);
 				for (CommentViewerPluginBase p : plugins) {
-					//TODO 各プラグインの実行は別スレッドで。
-					p.threadReceived(this, event);
+					new Thread(new ThreadReceivedRunnable(p, this, event)).start();
 				}
 			} else if (tag.startsWith("<chat_result")) {
 				//chat_resultタグ
-				//TODO まだXMLばらしてない
-				ChatResultMessage message = new ChatResultMessage();
+				System.out.println(tag);
+				ChatResultMessage message = XMLUtil.getChatResultMessage(tag);
 				PluginCommentEvent event = new PluginCommentEvent(this, message);
 				for (CommentViewerPluginBase p : plugins) {
-					p.commentResultReceived(this, event);
+					new Thread(new ConnectedRunnable(p, this)).start();
+					new Thread(new CommentResultReceivedRunnable(p, this, event)).start();
 				}
-				System.out.println(tag);
 			} else {
 				//chatタグ
 				if (!tag.endsWith("</chat>")) {
@@ -149,6 +181,14 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 				tag = buf.append(tag).toString();
 				buf.setLength(0);
 				ChatMessage message = XMLUtil.getChatMessage(tag);
+				if (message.getText().startsWith("/disconnect")
+						&& message.getPremium().equals(PremiumConstants.SYSTEM_UNEI.toString())) {
+					//放送終了
+					for (CommentViewerPluginBase p : plugins) {
+						new Thread(new DisconnectedRunnable(p, this)).start();
+					}
+					disconnect();
+				}
 				//放送主・運営はアクティブと初コメの判定をしない
 				if (!message.getPremium().equals(PremiumConstants.BROADCASTER.toString())
 						&& !message.getPremium().equals(PremiumConstants.SYSTEM_UNEI.toString())) {
@@ -174,6 +214,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 						m.setNgComment(true);
 						PluginCommentEvent event = new PluginCommentEvent(this, m);
 						for (CommentViewerPluginBase p : plugins) {
+							new Thread(new CommentReceivedRunnable(p, this, event)).start();
 							p.commentReceived(this, event);
 						}
 					}
@@ -191,13 +232,14 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 	 * タイマーイベントリスナで駆動
 	 * @param e タイマーイベント
 	 */
+	@Override
 	public void timerTicked(TimerPluginEvent e) {
 		String baseTime = playerstatus.get(CommentViewerConstants.BASE_TIME);
 		String vpos = CommentUtil.calcVpos(baseTime, e.getCurrentTime().toString());
 		e.setVpos(Integer.valueOf(vpos));
 		//プラグインのtickメソッドを呼び出す
 		for (CommentViewerPluginBase plugin : plugins) {
-			plugin.tick(this, e);
+			new Thread(new TimerTickRunnable(plugin, this, e)).start();
 		}
 	}
 	/**
@@ -267,31 +309,12 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 		}
 	}
 
-	public static void main(String[] args) {
-
-	}
-	/**
-	 * cookieを取得します。
-	 * @return cookie
-	 */
-	public String getCookie() {
-	    return cookie;
-	}
-
 	/**
 	 * cookieを設定します。
 	 * @param cookie cookie
 	 */
 	public void setCookie(String cookie) {
 	    this.cookie = cookie;
-	}
-
-	/**
-	 * browserを取得します。
-	 * @return browser
-	 */
-	public String getBrowser() {
-	    return browser;
 	}
 
 	/**

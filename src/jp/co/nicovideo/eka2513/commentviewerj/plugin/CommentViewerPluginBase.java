@@ -18,7 +18,7 @@ public abstract class CommentViewerPluginBase implements CommetViewerPlugin {
 	 * @param comment comment
 	 * @throws CommentNotSendException CommentNotSendException
 	 */
-	protected final void sendComment(String mail, String comment) throws CommentNotSendException {
+	protected final void sendComment(String mail, String comment) throws CommentNotSendException{
 		listener.sendComment(new PluginSendEvent(this, mail, comment, null));
 	}
 

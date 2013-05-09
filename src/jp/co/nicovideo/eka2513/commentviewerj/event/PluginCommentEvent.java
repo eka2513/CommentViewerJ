@@ -1,7 +1,5 @@
 package jp.co.nicovideo.eka2513.commentviewerj.event;
 
-import java.util.EventObject;
-
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ChatMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ChatResultMessage;
 
@@ -9,7 +7,7 @@ import jp.co.nicovideo.eka2513.commentviewerj.dto.ChatResultMessage;
  * プラグインコメントイベント
  * @author eka2513
  */
-public class PluginCommentEvent extends EventObject {
+public class PluginCommentEvent extends PluginEventBase {
 
 	private static final long serialVersionUID = -6031446571923422360L;
 

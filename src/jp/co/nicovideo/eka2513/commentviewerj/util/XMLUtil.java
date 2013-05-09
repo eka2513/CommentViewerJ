@@ -15,6 +15,7 @@ import javax.xml.xpath.XPathFactory;
 
 import jp.co.nicovideo.eka2513.commentviewerj.constants.CommentViewerConstants;
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ChatMessage;
+import jp.co.nicovideo.eka2513.commentviewerj.dto.ChatResultMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ThreadMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentViewerException;
 
@@ -23,6 +24,37 @@ import org.xml.sax.SAXException;
 
 
 public class XMLUtil implements CommentViewerConstants {
+
+	public static ChatResultMessage getChatResultMessage(String xml) {
+		//<chat_result thread="1266480252" status="0" no="151"/>
+		ChatResultMessage message = new ChatResultMessage();
+		try {
+			DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+			        .newDocumentBuilder();
+			Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+			XPathFactory factory = XPathFactory.newInstance();
+            XPath xpath = factory.newXPath();
+            // 単一ノード取得
+            String location = "/chat_result/@thread";
+            message.setThread(xpath.evaluate(location, doc));
+            location = "/chat_result/@status";
+            message.setStatus(xpath.evaluate(location, doc));
+            location = "/chat_result/@no";
+            message.setNo(xpath.evaluate(location, doc));
+		} catch (ParserConfigurationException e) {
+			throw new CommentViewerException(e);
+		} catch (UnsupportedEncodingException e) {
+			throw new CommentViewerException(e);
+		} catch (SAXException e) {
+			System.out.println(xml);
+			throw new CommentViewerException(e);
+		} catch (IOException e) {
+			throw new CommentViewerException(e);
+		} catch (XPathExpressionException e) {
+			throw new CommentViewerException(e);
+		}
+		return message;
+	}
 
 	public static ChatMessage getChatMessage(String xml) {
 		ChatMessage message = new ChatMessage();
