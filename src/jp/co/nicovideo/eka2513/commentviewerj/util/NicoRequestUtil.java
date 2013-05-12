@@ -28,6 +28,17 @@ public class NicoRequestUtil extends RequestUtil {
 	}
 
 	/**
+	 * http://live.nicovideo.jp/myから生放送中のlvを取得します
+	 * @return
+	 */
+	public String getBroadcatingLv() {
+		String html = get("http://live.nicovideo.jp/my");
+		String regex = "<a .*?title=\"生放送を終了する\" onclick=\"immendStream\\('http:\\/\\/live\\.nicovideo\\.jp\\/','([0-9]+)'";
+		String lv = StringUtil.groupMatchFirst(regex, html);
+		return "lv"+lv;
+	}
+
+	/**
 	 * 放送画面からBSP用のtokenを取得します
 	 * @param lv
 	 * @return

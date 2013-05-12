@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="lib/cookiegetter4j.jar"/>
 	<classpathentry kind="lib" path="lib/java-getopt-1.0.14.jar"/>
 	<classpathentry kind="lib" path="lib/brodds.jar"/>
+	<classpathentry kind="lib" path="lib/swt-3.7.2-cocoa-macosx-x86_64.jar"/>
+	<classpathentry kind="lib" path="swing2swt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

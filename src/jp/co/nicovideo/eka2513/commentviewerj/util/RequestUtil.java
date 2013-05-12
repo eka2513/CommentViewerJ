@@ -237,7 +237,8 @@ public class RequestUtil {
 	 * cookieStringを設定します
 	 * @param cookieString cookieString
 	 */
-	public void setCookieString(String cookieString) {
+	public RequestUtil setCookieString(String cookieString) {
 	    this.cookieString = cookieString;
+	    return this;
 	}
 }

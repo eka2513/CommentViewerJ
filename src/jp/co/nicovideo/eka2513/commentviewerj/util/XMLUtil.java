@@ -42,15 +42,19 @@ public class XMLUtil implements CommentViewerConstants {
             location = "/chat_result/@no";
             message.setNo(xpath.evaluate(location, doc));
 		} catch (ParserConfigurationException e) {
+			System.out.println(xml);
 			throw new CommentViewerException(e);
 		} catch (UnsupportedEncodingException e) {
+			System.out.println(xml);
 			throw new CommentViewerException(e);
 		} catch (SAXException e) {
 			System.out.println(xml);
 			throw new CommentViewerException(e);
 		} catch (IOException e) {
+			System.out.println(xml);
 			throw new CommentViewerException(e);
 		} catch (XPathExpressionException e) {
+			System.out.println(xml);
 			throw new CommentViewerException(e);
 		}
 		return message;
@@ -159,6 +163,8 @@ public class XMLUtil implements CommentViewerConstants {
             result.put(START_TIME, xpath.evaluate(location, doc));
             location = "//stream/base_time";
             result.put(BASE_TIME, xpath.evaluate(location, doc));
+            location = "//stream/end_time";
+            result.put(END_TIME, xpath.evaluate(location, doc));
             location = "//user/user_id";
             result.put(USER_ID, xpath.evaluate(location, doc));
             location = "//user/is_premium";

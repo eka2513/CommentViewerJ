@@ -30,6 +30,8 @@ public interface CommentViewerConstants {
 	public static final String START_TIME = "start_time";
 	/** BASE_TIME */
 	public static final String BASE_TIME = "base_time";
+	/** BASE_TIME */
+	public static final String END_TIME = "end_time";
 	/** COMMENT_THREAD_XML */
 	public static final String COMMENT_THREAD_XML = "<thread thread=\"%s\" version=\"20061206\" res_from=\"-200\"/>\0";
 
@@ -47,5 +49,7 @@ public interface CommentViewerConstants {
 	public static final String CONFIG_DIR = "conf/";
 	/** コテハン設定ファイル */
 	public static final String HANDLE_NAME_DB = CONFIG_DIR + "kotehan.dat";
+	/** グローバル設定ファイル */
+	public static final String GLOBAL_SETTING_DB = CONFIG_DIR + "setting.dat";
 
 }

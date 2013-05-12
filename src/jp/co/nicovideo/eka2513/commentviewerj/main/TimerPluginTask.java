@@ -9,7 +9,7 @@ public class TimerPluginTask extends TimerTask {
 
 	private TimerPluginEventListener timerPluginEventListener;
 
-	public TimerPluginTask() {
+	TimerPluginTask() {
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package jp.co.nicovideo.eka2513.commentviewerj.util;
+package jp.co.nicovideo.eka2513.commentviewerj.main.settings;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +13,8 @@ import jp.co.nicovideo.eka2513.commentviewerj.dto.ThreadMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.event.CommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.CommentEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentViewerException;
+import jp.co.nicovideo.eka2513.commentviewerj.util.CommentUtil;
+import jp.co.nicovideo.eka2513.commentviewerj.util.NicoRequestUtil;
 import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
 public class CommentThread extends Thread implements CommentViewerConstants {
