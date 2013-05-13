@@ -436,7 +436,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	public void commentResultReceived(PluginCommentEvent e) {
 		System.out.println("commentResultReceived");
 		// set comment to table
-		ChatResultMessage message = e.getResult();
+//		ChatResultMessage message = e.getResult();
 		// error handling
 	}
 
