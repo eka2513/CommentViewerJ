@@ -22,8 +22,14 @@ public interface CommentViewerConstants {
 
 	/** USER_ID */
 	public static final String USER_ID = "user_id";
-	/** USER_ID */
+	/** PREMIUM */
 	public static final String PREMIUM = "is_premium";
+	/** TITLE */
+	public static final String LIVE_TITLE = "title";
+	/** 来場者 */
+	public static final String WATCH_COUNT = "watch_count";
+	/** コメント数 */
+	public static final String COMMENT_COUNT = "comment_count";
 	/** TIME */
 	public static final String TIME = "time";
 	/** START_TIME */

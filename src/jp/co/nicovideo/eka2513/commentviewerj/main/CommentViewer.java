@@ -50,15 +50,16 @@ public class CommentViewer extends CommentViewerBase {
 				PluginThreadEvent event = new PluginThreadEvent(this, message);
 				for (CommentViewerPluginBase p : plugins) {
 					new Thread(new ThreadReceivedRunnable(p, this, event)).start();
+					listener.threadReceived(event);
 				}
 			} else if (tag.startsWith("<chat_result")) {
 				//chat_resultタグ
 				ChatResultMessage message = XMLUtil.getChatResultMessage(tag);
 				PluginCommentEvent event = new PluginCommentEvent(this, message);
 				for (CommentViewerPluginBase p : plugins) {
+					listener.commentResultReceived(event);
 					new Thread(new ConnectedRunnable(p, this)).start();
 					new Thread(new CommentResultReceivedRunnable(p, this, event)).start();
-					listener.connectReceived();
 				}
 			} else {
 				//chatタグ
@@ -69,8 +70,10 @@ public class CommentViewer extends CommentViewerBase {
 				tag = buf.append(tag).toString();
 				buf.setLength(0);
 				ChatMessage message = XMLUtil.getChatMessage(tag);
+				int diff = StringUtil.inull2Val(playerstatus.get(CommentViewerConstants.BASE_TIME)) - StringUtil.inull2Val(playerstatus.get(CommentViewerConstants.START_TIME));
+				message.setVposFromStartTime(String.valueOf(StringUtil.inull2Val(message.getVpos()) + diff));
 				if (message.getText().startsWith("/disconnect")
-						&& message.getPremium().equals(PremiumConstants.SYSTEM_UNEI.toString())) {
+						&& message.getPremium().equals(PremiumConstants.BROADCASTER.toString())) {
 					//放送終了
 					for (CommentViewerPluginBase p : plugins) {
 						listener.disconnectReceived();
@@ -89,9 +92,14 @@ public class CommentViewer extends CommentViewerBase {
 				}
 
 				//コテハン上書き
-				if (globalSetting.getHandleNameSetting().isOverwrite()) {
-					handleName = StringUtil.groupMatchFirst("[＠@]([^\\s　]+)", message.getText());
-					if (handleName != null && handleName.length() > 0) {
+				handleName = StringUtil.groupMatchFirst("[＠@]([^\\s　]+)", message.getText());
+				if (handleName != null && handleName.length() > 0) {
+					if (handleNameCache.containsKey(message.getUser_id())) {
+						if (globalSetting.getHandleNameSetting().isOverwrite()) {
+							handleNameCache.put(message.getUser_id(), handleName);
+							new SerializerUtil<HashMap<String, String>>().save(CommentViewerConstants.HANDLE_NAME_DB, handleNameCache);
+						}
+					} else {
 						handleNameCache.put(message.getUser_id(), handleName);
 						new SerializerUtil<HashMap<String, String>>().save(CommentViewerConstants.HANDLE_NAME_DB, handleNameCache);
 					}
@@ -107,6 +115,7 @@ public class CommentViewer extends CommentViewerBase {
 						ChatMessage m = new ChatMessage();
 						m.setNo(String.valueOf(lastCommentNo+i));
 						m.setNgComment(true);
+						m.setText("NGコメントです");
 						PluginCommentEvent event = new PluginCommentEvent(this, m);
 						for (CommentViewerPluginBase p : plugins) {
 							listener.commentReceived(event);

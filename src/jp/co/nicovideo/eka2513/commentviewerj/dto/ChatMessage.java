@@ -22,6 +22,10 @@ public class ChatMessage implements Serializable {
 	private String locale;
 	private String score;
 	private String premium;
+
+	/** 開始時刻からのvpos */
+	private String vposFromStartTime;
+
 	/** 初コメ */
 	private boolean firstComment;
 	/** NGコメ */
@@ -198,6 +202,22 @@ public class ChatMessage implements Serializable {
 	public void setPremium(String premium) {
 	    this.premium = premium;
 	}
+	/**
+	 * 開始時刻からのvposを取得します。
+	 * @return 開始時刻からのvpos
+	 */
+	public String getVposFromStartTime() {
+	    return vposFromStartTime;
+	}
+
+	/**
+	 * 開始時刻からのvposを設定します。
+	 * @param vposFromStartTime 開始時刻からのvpos
+	 */
+	public void setVposFromStartTime(String vposFromStartTime) {
+	    this.vposFromStartTime = vposFromStartTime;
+	}
+
 	/**
 	 * 初コメを取得します。
 	 * @return 初コメ

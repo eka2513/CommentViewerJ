@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="all" name="Create Runnable Jar for Project">
+
+	<property name="app_name" value="CommentViewerJ"/>
+
+    <taskdef name="jarbundler"
+         classname="net.sourceforge.jarbundler.JarBundler" />
+
+    <target name="create_app_cocoa_x64" depends="create_run_jar_cocoa_x64">
+	    <jarbundler
+			dir="build/macos/cocoa-x64/"
+	        name="${app_name}"
+	        mainclass="jp.co.nicovideo.eka2513.commentviewerj.main.swt.WindowMainStub"
+	        jar="build/${app_name}-cocoa-x64.jar"
+	        jvmarchs="x64_86"
+	        lsArchitecturePriority="x64_86"
+	        jvmversion="1.6+"
+	        arguments=""
+	        shortname="CVJ"
+	        vmoptions="-XstartOnFirstThread"
+	        icon="icon.icns"
+	        startOnMainThread="true"
+	        >
+	    </jarbundler>
+		<delete file="build/macos/cocoa-x64/${app_name}.app/Contents/MacOS/JavaApplicationStub"/>
+		<exec executable="ln">
+		    <arg line="-s /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
+		    <arg value="build/macos/cocoa-x64/${app_name}.app/Contents/MacOS/JavaApplicationStub"/>
+		</exec>
+  	</target>
+
+    <target name="create_app_cocoa_x86" depends="create_run_jar_cocoa">
+	    <jarbundler
+			dir="build/macos/cocoa-x86/"
+	        name="${app_name}"
+	        mainclass="jp.co.nicovideo.eka2513.commentviewerj.main.swt.WindowMainStub"
+	        jar="build/${app_name}-cocoa.jar"
+	        jvmarchs="x86"
+	        lsArchitecturePriority="x86"
+	        jvmversion="1.6+"
+	        arguments=""
+	        shortname="CVJ"
+	        vmoptions="-XstartOnFirstThread"
+	        icon="icon.icns"
+	        startOnMainThread="true"
+	        >
+	    </jarbundler>
+		<delete file="build/macos/cocoa-x86/${app_name}.app/Contents/MacOS/JavaApplicationStub"/>
+		<exec executable="ln">
+		    <arg line="-s /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
+		    <arg value="build/macos/cocoa-x64/${app_name}.app/Contents/MacOS/JavaApplicationStub"/>
+		</exec>
+  	</target>
+
+    <target name="create_app_carbon" depends="create_run_jar_carbon">
+	    <jarbundler
+			dir="build/macos/carbon/"
+	        name="${app_name}"
+	        mainclass="jp.co.nicovideo.eka2513.commentviewerj.main.swt.WindowMainStub"
+	        jar="build/${app_name}-carbon.jar"
+	        jvmarchs="x86"
+	        lsArchitecturePriority="x86"
+	        jvmversion="1.6+"
+	        arguments=""
+	        shortname="CVJ"
+	        vmoptions="-XstartOnFirstThread"
+	        icon="icon.icns"
+	        startOnMainThread="true"
+	        >
+	    </jarbundler>
+		<delete file="build/macos/carbon/${app_name}.app/Contents/MacOS/JavaApplicationStub"/>
+		<exec executable="ln">
+		    <arg line="-s /System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
+		    <arg value="build/macos/carbon/${app_name}.app/Contents/MacOS/JavaApplicationStub"/>
+		</exec>
+  	</target>
+
+    <target name="create_run_jar_cocoa_x64">
+        <jar destfile="build/${app_name}-cocoa-x64.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="jp.co.nicovideo.eka2513.commentviewerj.main.swt.WindowMainStub"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/brodds.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/cookiegetter4j.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/sqlite-jdbc-3.7.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/java-getopt-1.0.14.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.commands_3.6.0.I20110111-0800.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.text_3.5.101.v20110928-1504.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface_3.7.0.v20110928-1505.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface.text_3.7.2.v20111213-1208.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/com.ibm.icu_4.4.2.v20110823.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.forms_3.5.101.v20111011-1919.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/swt-3.7.2-cocoa-macosx-x86_64.jar"/>
+            </jar>
+    </target>
+    <target name="create_run_jar_cocoa">
+        <jar destfile="build/${app_name}-cocoa.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="jp.co.nicovideo.eka2513.commentviewerj.main.swt.WindowMainStub"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/brodds.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/cookiegetter4j.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/sqlite-jdbc-3.7.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/java-getopt-1.0.14.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.commands_3.6.0.I20110111-0800.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.text_3.5.101.v20110928-1504.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface_3.7.0.v20110928-1505.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface.text_3.7.2.v20111213-1208.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/com.ibm.icu_4.4.2.v20110823.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.forms_3.5.101.v20111011-1919.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/swt-3.7.2-cocoa-macosx.jar"/>
+        </jar>
+    </target>
+    <target name="create_run_jar_carbon">
+        <jar destfile="build/${app_name}-carbon.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="jp.co.nicovideo.eka2513.commentviewerj.main.swt.WindowMainStub"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/brodds.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/cookiegetter4j.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/sqlite-jdbc-3.7.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/java-getopt-1.0.14.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.commands_3.6.0.I20110111-0800.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.text_3.5.101.v20110928-1504.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface_3.7.0.v20110928-1505.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface.text_3.7.2.v20111213-1208.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/com.ibm.icu_4.4.2.v20110823.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.forms_3.5.101.v20111011-1919.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/swt-3.7.2-carbon-macosx.jar"/>
+        </jar>
+    </target>
+    <target name="create_run_jar_win32">
+        <jar destfile="build/${app_name}-win32.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="jp.co.nicovideo.eka2513.commentviewerj.main.swt.WindowMainStub"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/brodds.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/cookiegetter4j.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/sqlite-jdbc-3.7.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/java-getopt-1.0.14.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.commands_3.6.0.I20110111-0800.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.text_3.5.101.v20110928-1504.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface_3.7.0.v20110928-1505.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface.text_3.7.2.v20111213-1208.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/com.ibm.icu_4.4.2.v20110823.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.forms_3.5.101.v20111011-1919.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/swt-3.7.2-win32-win32-x86.jar"/>
+        </jar>
+    </target>
+    <target name="create_run_jar_win64">
+        <jar destfile="build/${app_name}-win64.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="jp.co.nicovideo.eka2513.commentviewerj.main.swt.WindowMainStub"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/brodds.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/cookiegetter4j.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/sqlite-jdbc-3.7.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/java-getopt-1.0.14.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.commands_3.6.0.I20110111-0800.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.text_3.5.101.v20110928-1504.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface_3.7.0.v20110928-1505.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface.text_3.7.2.v20111213-1208.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/com.ibm.icu_4.4.2.v20110823.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.forms_3.5.101.v20111011-1919.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/swt-3.7.2-win32-win32-x86_64.jar"/>
+        </jar>
+    </target>
+    <target name="create_run_jar_gtk_linux_x64">
+        <jar destfile="build/${app_name}-gtk-x64.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="jp.co.nicovideo.eka2513.commentviewerj.main.swt.WindowMainStub"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/brodds.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/cookiegetter4j.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/sqlite-jdbc-3.7.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/java-getopt-1.0.14.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.commands_3.6.0.I20110111-0800.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.text_3.5.101.v20110928-1504.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface_3.7.0.v20110928-1505.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface.text_3.7.2.v20111213-1208.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/com.ibm.icu_4.4.2.v20110823.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.forms_3.5.101.v20111011-1919.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/swt-4.2.2-gtk-linux-x86_64.jar"/>
+        </jar>
+    </target>
+    <target name="create_run_jar_gtk_linux_x86">
+        <jar destfile="build/${app_name}-gtk-x86.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="jp.co.nicovideo.eka2513.commentviewerj.main.swt.WindowMainStub"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/brodds.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/cookiegetter4j.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/sqlite-jdbc-3.7.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/java-getopt-1.0.14.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.osgi_3.7.2.v20120110-1415.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.commands_3.6.0.I20110111-0800.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.common_3.6.0.v20110523.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.equinox.registry_3.5.101.R37x_v20110810-1611.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.core.runtime_3.7.0.v20110110.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.text_3.5.101.v20110928-1504.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface_3.7.0.v20110928-1505.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.jface.text_3.7.2.v20111213-1208.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.workbench_3.7.1.v20120104-1859.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/com.ibm.icu_4.4.2.v20110823.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.forms_3.5.101.v20111011-1919.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/swt-4.2.2-gtk-linux-x86.jar"/>
+        </jar>
+    </target>
+</project>

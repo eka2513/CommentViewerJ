@@ -169,6 +169,12 @@ public class XMLUtil implements CommentViewerConstants {
             result.put(USER_ID, xpath.evaluate(location, doc));
             location = "//user/is_premium";
             result.put(PREMIUM, xpath.evaluate(location, doc));
+            location = "//stream/title";
+            result.put(LIVE_TITLE, xpath.evaluate(location, doc));
+            location = "//stream/watch_count";
+            result.put(WATCH_COUNT, xpath.evaluate(location, doc));
+            location = "//stream/comment_count";
+            result.put(COMMENT_COUNT, xpath.evaluate(location, doc));
 
 		} catch (ParserConfigurationException e) {
 		} catch (UnsupportedEncodingException ignore) {

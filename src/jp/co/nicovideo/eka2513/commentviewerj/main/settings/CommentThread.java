@@ -108,8 +108,19 @@ public class CommentThread extends Thread implements CommentViewerConstants {
 					br.read(data, 0, in.available());
 					xml = new String(data);
 					String[] tags = xml.split("\0");
+					String[] tmp = null;
 					for (String tag : tags) {
-					    commentEventListener.comReceived(new CommentEvent(this, tag));
+						//たまに
+						//<chat thread="1266663338" no="5062" vpos="1002519" date="1368413045" date_usec="870340" user_id="12811893" premium="1" locale="ja-jp">もみもみ～</chat><chat thread="1266663338" no="5063" vpos="1002513" date="1368413046" date_usec="370333" mail="184" user_id="gCYIzbU-NDlqs95CiVbVa7spnwU" anonymity="1" locale="ja-jp">ლ(╹◡╹ლ)もみもみ</chat>
+						//こんなのがくるからそれもばらす
+						tmp = tag.replaceAll("><", ">\0<").split("\0");
+						if (tmp.length > 1) {
+							System.out.println("chats");
+						}
+						for (String s : tmp) {
+							if (s != null && s.length() > 0)
+								commentEventListener.comReceived(new CommentEvent(this, s));
+						}
 					}
 				}
 				Thread.sleep(100);

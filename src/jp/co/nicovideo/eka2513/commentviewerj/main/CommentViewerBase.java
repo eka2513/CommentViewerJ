@@ -90,10 +90,12 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 	protected CommentViewerBase() {
 		//グローバル設定ロード。(再ロードは保存時)
 		globalSetting = GlobalSettingUtil.load();
-		if (globalSetting.getGeneralSetting() != null) {
+		if (globalSetting != null && globalSetting.getGeneralSetting() != null) {
 			this.cookie = NicoCookieManagerFactory
 					.getInstance(globalSetting.getGeneralSetting().getBrowser())
 						.getSessionCookie().toCookieString();
+		} else {
+			globalSetting = new GlobalSetting();
 		}
 	}
 
@@ -196,6 +198,8 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 				tag = buf.append(tag).toString();
 				buf.setLength(0);
 				ChatMessage message = XMLUtil.getChatMessage(tag);
+				int diff = StringUtil.inull2Val(playerstatus.get(CommentViewerConstants.BASE_TIME)) - StringUtil.inull2Val(playerstatus.get(CommentViewerConstants.START_TIME));
+				message.setVposFromStartTime(String.valueOf(StringUtil.inull2Val(message.getVpos()) + diff));
 				if (message.getText().startsWith("/disconnect")
 						&& message.getPremium().equals(PremiumConstants.SYSTEM_UNEI.toString())) {
 					//放送終了
@@ -215,9 +219,14 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 				}
 
 				//コテハン上書き
-				if (globalSetting.getHandleNameSetting().isOverwrite()) {
-					handleName = StringUtil.groupMatchFirst("[＠@]([^\\s　]+)", message.getText());
-					if (handleName != null && handleName.length() > 0) {
+				handleName = StringUtil.groupMatchFirst("[＠@]([^\\s　]+)", message.getText());
+				if (handleName != null && handleName.length() > 0) {
+					if (handleNameCache.containsKey(message.getUser_id())) {
+						if (globalSetting.getHandleNameSetting().isOverwrite()) {
+							handleNameCache.put(message.getUser_id(), handleName);
+							new SerializerUtil<HashMap<String, String>>().save(CommentViewerConstants.HANDLE_NAME_DB, handleNameCache);
+						}
+					} else {
 						handleNameCache.put(message.getUser_id(), handleName);
 						new SerializerUtil<HashMap<String, String>>().save(CommentViewerConstants.HANDLE_NAME_DB, handleNameCache);
 					}
@@ -376,6 +385,30 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 	 */
 	public void setLv(String lv) {
 	    this.lv = lv;
+	}
+
+	/**
+	 * handleNameCacheを取得します。
+	 * @return handleNameCache
+	 */
+	public HashMap<String,String> getHandleNameCache() {
+	    return handleNameCache;
+	}
+
+	/**
+	 * playerstatusを取得します。
+	 * @return playerstatus
+	 */
+	public Map<String,String> getPlayerstatus() {
+	    return playerstatus;
+	}
+
+	/**
+	 * playerstatusを設定します。
+	 * @param playerstatus playerstatus
+	 */
+	public void setPlayerstatus(Map<String,String> playerstatus) {
+	    this.playerstatus = playerstatus;
 	}
 
 	/**
