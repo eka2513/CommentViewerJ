@@ -92,6 +92,8 @@ public class XMLUtil implements CommentViewerConstants {
             message.setScore(xpath.evaluate(location, doc));
             location = "/chat/@locale";
             message.setLocale(xpath.evaluate(location, doc));
+            location = "/chat/@yourpost";
+            message.setYourpost(xpath.evaluate(location, doc));
             location = "/chat/text()";
             message.setText(xpath.evaluate(location, doc));
 		} catch (ParserConfigurationException e) {
@@ -175,6 +177,12 @@ public class XMLUtil implements CommentViewerConstants {
             result.put(WATCH_COUNT, xpath.evaluate(location, doc));
             location = "//stream/comment_count";
             result.put(COMMENT_COUNT, xpath.evaluate(location, doc));
+            location = "//stream/default_community";
+            result.put(DEFAULT_COMMUNITY, xpath.evaluate(location, doc));
+            location = "//user/room_label";
+            result.put(ROOM_LABEL, xpath.evaluate(location, doc));
+            location = "//user/room_seetno";
+            result.put(SEET_NO, xpath.evaluate(location, doc));
 
 		} catch (ParserConfigurationException e) {
 		} catch (UnsupportedEncodingException ignore) {

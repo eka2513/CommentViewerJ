@@ -1,6 +1,7 @@
 package jp.co.nicovideo.eka2513.commentviewerj.main;
 
 import gnu.getopt.Getopt;
+import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentServerException;
 import jp.nicovideo.eka2513.cookiegetter4j.cookie.NicoCookieManager;
 import jp.nicovideo.eka2513.cookiegetter4j.cookie.NicoCookieManagerFactory;
 
@@ -9,8 +10,9 @@ public class CommentViewerCommandLine extends CommentViewerBase {
 	/**
 	 * mainメソッド。パラメータの取得と#alert()の呼び出し
 	 * @param args パラメータ
+	 * @throws CommentServerException
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CommentServerException {
 
 		CommentViewerCommandLine cv = new CommentViewerCommandLine();
 		//-b browser

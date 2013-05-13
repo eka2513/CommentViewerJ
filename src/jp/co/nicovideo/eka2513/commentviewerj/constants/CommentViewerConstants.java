@@ -30,6 +30,12 @@ public interface CommentViewerConstants {
 	public static final String WATCH_COUNT = "watch_count";
 	/** コメント数 */
 	public static final String COMMENT_COUNT = "comment_count";
+	/** コミュニティ */
+	public static final String DEFAULT_COMMUNITY = "default_community";
+	/** ROOM LABEL */
+	public static final String ROOM_LABEL = "room_label";
+	/** SEAT_NO */
+	public static final String SEET_NO = "room_seetno";
 	/** TIME */
 	public static final String TIME = "time";
 	/** START_TIME */

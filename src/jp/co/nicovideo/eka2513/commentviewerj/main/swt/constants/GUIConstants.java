@@ -4,6 +4,9 @@ import jp.co.nicovideo.eka2513.commentviewerj.constants.CommentViewerConstants;
 
 public interface GUIConstants extends CommentViewerConstants {
 
+	public static final String CONNECT_BTN_TEXT_ON = "接続";
+	public static final String CONNECT_BTN_TEXT_OFF = "切断";
+
 	public static final String APPLICATION_NAME = "CommentViweerJ";
 	public static final String VERSION = "0.0.1";
 

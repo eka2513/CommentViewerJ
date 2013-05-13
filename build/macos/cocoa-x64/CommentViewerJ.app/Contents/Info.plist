@@ -2,7 +2,7 @@
 <plist version="1.0">
   <dict>
     <key>CFBundleName</key>
-    <string>CVJ</string>
+    <string>CommentViewerJ</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>CFBundleGetInfoString</key>

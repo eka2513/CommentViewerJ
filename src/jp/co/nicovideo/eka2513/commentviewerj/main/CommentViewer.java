@@ -110,7 +110,7 @@ public class CommentViewer extends CommentViewerBase {
 				}
 
 				//NG判定
-				if (lastCommentNo+1 != StringUtil.inull2Val(message.getNo())) {
+				if (StringUtil.inull2Val(message.getNo()) > 0 && lastCommentNo > 0 && lastCommentNo+1 != StringUtil.inull2Val(message.getNo())) {
 					for (int i=1; i<StringUtil.inull2Val(message.getNo())-lastCommentNo; i++) {
 						ChatMessage m = new ChatMessage();
 						m.setNo(String.valueOf(lastCommentNo+i));

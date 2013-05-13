@@ -14,9 +14,11 @@ import jp.co.nicovideo.eka2513.commentviewerj.event.PluginSendEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
+import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentServerException;
 import jp.co.nicovideo.eka2513.commentviewerj.main.CommentViewer;
 import jp.co.nicovideo.eka2513.commentviewerj.main.eventlistener.GUIEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.main.swt.constants.GUIConstants;
+import jp.co.nicovideo.eka2513.commentviewerj.main.swt.widgets.SearchText;
 import jp.co.nicovideo.eka2513.commentviewerj.util.GlobalSettingUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.NicoRequestUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.NicoStringUtil;
@@ -62,7 +64,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	private HashMap<Integer, Image> imageCache;
 	private HashMap<Integer, String> userNameCache;
 	private Combo cmbBrowsers;
-	private Text txtLv;
+	private SearchText txtLv;
 	private Button btnConnect;
 	private Table table;
 	private Text comment;
@@ -119,8 +121,15 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 					return;
 				}
 				commentViewer.setBrowser(cmbBrowsers.getText());
-				commentViewer.connect();
-				btnConnect.setText("切断");
+				try {
+					commentViewer.connect();
+				} catch (CommentServerException e1) {
+					e1.printStackTrace();
+					return;
+				}
+				table.removeAll();
+				txtLv.setEnabled(false);
+				btnConnect.setText(CONNECT_BTN_TEXT_OFF);
 			}
 		});
 		btnBroadcasting.setText("放送中");
@@ -151,7 +160,33 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		lblLv.setLayoutData(gd);
 		lblLv.setText("lv or URL");
 
-		txtLv = new Text(group, SWT.BORDER | SWT.SINGLE);
+		txtLv = new SearchText(group, "lv or URL") {
+			@Override
+			public void enterKeyDetected() {
+				if (btnConnect.getText().equals(CONNECT_BTN_TEXT_ON)) {
+					final String lv = NicoStringUtil.getLvFromUrl(txtLv.getText());
+					final String cookie = NicoCookieManagerFactory
+							.getInstance(cmbBrowsers.getText())
+							.getSessionCookie().toCookieString();
+					commentViewer.setBrowser(cmbBrowsers.getText());
+					commentViewer.setLv(lv);
+					commentViewer.setCookie(cookie);
+					try {
+						commentViewer.connect();
+					} catch (CommentServerException e) {
+						e.printStackTrace();
+						return;
+					}
+					table.removeAll();
+					txtLv.setEnabled(false);
+					btnConnect.setText(CONNECT_BTN_TEXT_OFF);
+				} else {
+					commentViewer.disconnect();
+					txtLv.setEnabled(true);
+					btnConnect.setText(CONNECT_BTN_TEXT_ON);
+				}
+			}
+		};
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 3;
 		gd.widthHint = 200;
@@ -164,7 +199,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		btnConnect.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (((Button) e.getSource()).getText().equals("接続")) {
+				if (((Button) e.getSource()).getText().equals(CONNECT_BTN_TEXT_ON)) {
 					final String lv = NicoStringUtil.getLvFromUrl(txtLv.getText());
 					final String cookie = NicoCookieManagerFactory
 							.getInstance(cmbBrowsers.getText())
@@ -172,16 +207,23 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 					commentViewer.setBrowser(cmbBrowsers.getText());
 					commentViewer.setLv(lv);
 					commentViewer.setCookie(cookie);
-					commentViewer.connect();
+					try {
+						commentViewer.connect();
+					} catch (CommentServerException e1) {
+						e1.printStackTrace();
+						return;
+					}
 					table.removeAll();
-					((Button) e.getSource()).setText("切断");
+					txtLv.setEnabled(false);
+					((Button) e.getSource()).setText(CONNECT_BTN_TEXT_OFF);
 				} else {
 					commentViewer.disconnect();
-					((Button) e.getSource()).setText("接続");
+					txtLv.setEnabled(true);
+					((Button) e.getSource()).setText(CONNECT_BTN_TEXT_ON);
 				}
 			}
 		});
-		btnConnect.setText("接続");
+		btnConnect.setText(CONNECT_BTN_TEXT_ON);
 		commentViewer = new CommentViewer();
 		cmbBrowsers.setText(commentViewer.getGlobalSetting()
 				.getGeneralSetting().getBrowser());
@@ -417,7 +459,6 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 
 	@Override
 	public void threadReceived(PluginThreadEvent e) {
-		System.out.println("threadReceived");
 		String title = commentViewer.getPlayerstatus().get(LIVE_TITLE);
 		getDisplay().asyncExec(new ThreadMessageRunnable(e.getMessage(), title));
 //		ThreadMessage message = e.getMessage();
@@ -426,7 +467,6 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 
 	@Override
 	public void commentReceived(PluginCommentEvent e) {
-		System.out.println("commentReceived");
 		ChatMessage message = e.getMessage();
 		setTableData(message);
 	}
@@ -445,7 +485,8 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
-				btnConnect.setText("接続");
+				txtLv.setEnabled(true);
+				btnConnect.setText(CONNECT_BTN_TEXT_ON);
 			}
 		});
 	}
@@ -470,7 +511,10 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		 		String pastTime = SWTUtil.vpos2Time(String.valueOf(100*(now - startTime)));
 				//残り時間
 		 		String elapsedTime = SWTUtil.vpos2Time(String.valueOf(100*(endTime - now)));
-		 		lblTime.setText(String.format("経 %s 残 %s 来場者 %s コメント %s アクティブ %s",
+		 		lblTime.setText(String.format("%s %s:%s 経過時間:%s 残り時間:%s 来場者:%s コメント:%s アクティブ:%s",
+		 				commentViewer.getPlayerstatus().get(DEFAULT_COMMUNITY),
+		 				commentViewer.getPlayerstatus().get(ROOM_LABEL),
+		 				commentViewer.getPlayerstatus().get(SEET_NO),
 		 				pastTime, elapsedTime,
 		 				commentViewer.getPlayerstatus().get(WATCH_COUNT),
 		 				commentViewer.getPlayerstatus().get(COMMENT_COUNT),
@@ -531,36 +575,44 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		@Override
 		public void run() {
 			TableItem item = new TableItem(table, SWT.NULL);
-			Image im = null;
 			String userName = "";
-			//TODO 別スレッドにする
 			if (StringUtil.inull2Val(message.getUser_id()).toString().equals(message.getUser_id())) {
 				Integer userid = StringUtil.inull2Val(message.getUser_id());
 				//ユーザ名
 				if (userNameCache.containsKey(userid)) {
 					userName = userNameCache.get(userid);
 				} else {
-					//<title>uyuさんのユーザーページ - niconico</title>
-					String html = StringUtil.null2Val(new NicoRequestUtil(commentViewer.getCookie()).get(String.format("http://www.nicovideo.jp/user/%s", message.getUser_id())));
-					userName = StringUtil.null2Val(StringUtil.groupMatchFirst("<title>(.*?)さんのユーザーページ[^<]+<\\/title>", html));
-					userNameCache.put(userid, userName);
-					//ファイルキャッシュ
-					new SerializerUtil<HashMap<Integer, String>>().save(USERNAME_CACHE_FILE, userNameCache);
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							Integer userid = StringUtil.inull2Val(message.getUser_id());
+							//<title>uyuさんのユーザーページ - niconico</title>
+							String html = StringUtil.null2Val(new NicoRequestUtil(commentViewer.getCookie()).get(String.format("http://www.nicovideo.jp/user/%s", message.getUser_id())));
+							String userName = StringUtil.null2Val(StringUtil.groupMatchFirst("<title>(.*?)さんのユーザーページ[^<]+<\\/title>", html));
+							userNameCache.put(userid, userName);
+							//ファイルキャッシュ
+							new SerializerUtil<HashMap<Integer, String>>().save(USERNAME_CACHE_FILE, userNameCache);
+						}
+					}).start();
 				}
 				//サムネ
 				if (imageCache.containsKey(userid)) {
 					item.setImage(0, imageCache.get(userid));
 				} else {
-					Integer dir = userid / 10000;
-					im = SWTUtil.getImage(getDisplay(),
-							String.format("http://usericon.nimg.jp/usericon/%d/%d.jpg", dir, userid),
-								getDisplay(), 30, 30);
-					if (im != null) {
-						item.setImage(0, im);
-						imageCache.put(userid, im);
-						//TODO ファイルキャッシュは・・・やめとく？
-//						new SerializerUtil<HashMap<Integer, Image>>().save(IMAGE_CACHE_FILE, imageCache);
-					}
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							Integer userid = StringUtil.inull2Val(message.getUser_id());
+							Integer dir = userid / 10000;
+							Image im = SWTUtil.getImage(getDisplay(),
+									String.format("http://usericon.nimg.jp/usericon/%d/%d.jpg", dir, userid),
+										getDisplay(), 30, 30);
+							if (im != null) {
+//								item.setImage(0, im);
+								imageCache.put(userid, im);
+							}
+						}
+					}).start();
 				}
 			}
 			if (message.isNgComment()) {

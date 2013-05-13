@@ -19,6 +19,7 @@ import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.CommentEventListener
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.PluginSendEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.TimerPluginEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
+import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentServerException;
 import jp.co.nicovideo.eka2513.commentviewerj.main.settings.CommentThread;
 import jp.co.nicovideo.eka2513.commentviewerj.main.settings.GlobalSetting;
 import jp.co.nicovideo.eka2513.commentviewerj.main.thread.CommentReceivedRunnable;
@@ -99,7 +100,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 		}
 	}
 
-	public void connect() {
+	public void connect() throws CommentServerException {
 		//init active
 		activeCache = new HashMap<String, Long>();
 		//load cache
@@ -120,6 +121,13 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 		for (CommentViewerPluginBase p : plugins) {
 			p.addListener(this);
 		}
+
+		if (StringUtil.null2Val(playerstatus.get(CommentViewerConstants.ADDR)).equals("")) {
+			//TODO error
+			System.err.println("コメントサーバに接続出来ません.");
+			throw new CommentServerException("コメントサーバに接続出来ません");
+		}
+
 		comThread = new CommentThread(
 				playerstatus.get(CommentViewerConstants.ADDR),
 				playerstatus.get(CommentViewerConstants.PORT),
@@ -237,7 +245,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 				}
 
 				//NG判定
-				if (lastCommentNo+1 != StringUtil.inull2Val(message.getNo())) {
+				if (StringUtil.inull2Val(message.getNo()) > 0 && lastCommentNo > 0 && lastCommentNo+1 != StringUtil.inull2Val(message.getNo())) {
 					for (int i=1; i<StringUtil.inull2Val(message.getNo())-lastCommentNo; i++) {
 						ChatMessage m = new ChatMessage();
 						m.setNo(String.valueOf(lastCommentNo+i));
