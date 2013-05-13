@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 import jp.co.nicovideo.eka2513.commentviewerj.constants.PremiumConstants;
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ChatMessage;
-import jp.co.nicovideo.eka2513.commentviewerj.dto.ChatResultMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.dto.ThreadMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginSendEvent;
