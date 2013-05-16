@@ -6,9 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 
-public class SerializerUtil<T extends Serializable> {
+public class SerializerUtil<T> {
 
 	public void save(String filename, T object ) {
 		try {
@@ -34,6 +33,7 @@ public class SerializerUtil<T extends Serializable> {
 			inFile.close();
 			return object;
 		} catch (Throwable e) {
+			e.printStackTrace();
 			return null;
 		}
 	}

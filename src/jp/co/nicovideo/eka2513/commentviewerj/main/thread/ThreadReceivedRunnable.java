@@ -2,7 +2,7 @@ package jp.co.nicovideo.eka2513.commentviewerj.main.thread;
 
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.main.CommentViewerBase;
-import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
+import jp.co.nicovideo.eka2513.commentviewerj.plugin.PluginBase;
 
 /**
  * pluginのthreadReceivedメソッドを呼び出します
@@ -11,7 +11,7 @@ import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
  */
 public class ThreadReceivedRunnable implements Runnable {
 
-	private CommentViewerPluginBase plugin;
+	private PluginBase plugin;
 	private CommentViewerBase source;
 	private PluginThreadEvent event;
 
@@ -19,7 +19,7 @@ public class ThreadReceivedRunnable implements Runnable {
 	private ThreadReceivedRunnable() {
 	}
 
-	public ThreadReceivedRunnable(CommentViewerPluginBase plugin, CommentViewerBase source, PluginThreadEvent event) {
+	public ThreadReceivedRunnable(PluginBase plugin, CommentViewerBase source, PluginThreadEvent event) {
 		this.plugin = plugin;
 		this.source = source;
 		this.event = event;

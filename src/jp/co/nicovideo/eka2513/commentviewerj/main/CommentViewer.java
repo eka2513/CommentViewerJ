@@ -18,7 +18,7 @@ import jp.co.nicovideo.eka2513.commentviewerj.main.thread.ConnectedRunnable;
 import jp.co.nicovideo.eka2513.commentviewerj.main.thread.DisconnectedRunnable;
 import jp.co.nicovideo.eka2513.commentviewerj.main.thread.ThreadReceivedRunnable;
 import jp.co.nicovideo.eka2513.commentviewerj.main.thread.TimerTickRunnable;
-import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
+import jp.co.nicovideo.eka2513.commentviewerj.plugin.PluginBase;
 import jp.co.nicovideo.eka2513.commentviewerj.util.CommentUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.SerializerUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.XMLUtil;
@@ -48,7 +48,7 @@ public class CommentViewer extends CommentViewerBase {
 				threadMessage = message;
 				lastCommentNo = StringUtil.inull2Val(threadMessage.getLast_res());
 				PluginThreadEvent event = new PluginThreadEvent(this, message);
-				for (CommentViewerPluginBase p : plugins) {
+				for (PluginBase p : plugins) {
 					new Thread(new ThreadReceivedRunnable(p, this, event)).start();
 					listener.threadReceived(event);
 				}
@@ -56,7 +56,7 @@ public class CommentViewer extends CommentViewerBase {
 				//chat_resultタグ
 				ChatResultMessage message = XMLUtil.getChatResultMessage(tag);
 				PluginCommentEvent event = new PluginCommentEvent(this, message);
-				for (CommentViewerPluginBase p : plugins) {
+				for (PluginBase p : plugins) {
 					listener.commentResultReceived(event);
 					new Thread(new ConnectedRunnable(p, this)).start();
 					new Thread(new CommentResultReceivedRunnable(p, this, event)).start();
@@ -75,7 +75,7 @@ public class CommentViewer extends CommentViewerBase {
 				if (message.getText().startsWith("/disconnect")
 						&& message.getPremium().equals(PremiumConstants.BROADCASTER.toString())) {
 					//放送終了
-					for (CommentViewerPluginBase p : plugins) {
+					for (PluginBase p : plugins) {
 						listener.disconnectReceived();
 						new Thread(new DisconnectedRunnable(p, this)).start();
 					}
@@ -117,7 +117,7 @@ public class CommentViewer extends CommentViewerBase {
 						m.setNgComment(true);
 						m.setText("NGコメントです");
 						PluginCommentEvent event = new PluginCommentEvent(this, m);
-						for (CommentViewerPluginBase p : plugins) {
+						for (PluginBase p : plugins) {
 							listener.commentReceived(event);
 							new Thread(new CommentReceivedRunnable(p, this, event)).start();
 						}
@@ -125,7 +125,7 @@ public class CommentViewer extends CommentViewerBase {
 				}
 				lastCommentNo = StringUtil.inull2Val(message.getNo());
 				PluginCommentEvent event = new PluginCommentEvent(this, message, calcActive());
-				for (CommentViewerPluginBase p : plugins) {
+				for (PluginBase p : plugins) {
 					listener.commentReceived(event);
 					new Thread(new CommentReceivedRunnable(p, this, event)).start();
 				}
@@ -143,7 +143,7 @@ public class CommentViewer extends CommentViewerBase {
 		String vpos = CommentUtil.calcVpos(baseTime, e.getCurrentTime().toString());
 		e.setVpos(Integer.valueOf(vpos));
 		//プラグインのtickメソッドを呼び出す
-		for (CommentViewerPluginBase plugin : plugins) {
+		for (PluginBase plugin : plugins) {
 			listener.ticked(e);
 			new Thread(new TimerTickRunnable(plugin, this, e)).start();
 		}

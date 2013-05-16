@@ -2,6 +2,7 @@
 <project default="all" name="Create Runnable Jar for Project">
 
 	<property name="app_name" value="CommentViewerJ"/>
+	<property name="app_ver" value="0.0.1"/>
 
     <taskdef name="jarbundler"
          classname="net.sourceforge.jarbundler.JarBundler" />
@@ -19,6 +20,7 @@
 	        shortname="CommentViewerJ"
 	        vmoptions="-XstartOnFirstThread"
 	        icon="icon.icns"
+	        infostring = "${app_name} ver ${app_ver}"
 	        startOnMainThread="true"
 	        >
 	    </jarbundler>

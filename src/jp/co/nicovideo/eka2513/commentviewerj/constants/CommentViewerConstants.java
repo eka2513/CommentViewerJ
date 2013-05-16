@@ -45,7 +45,7 @@ public interface CommentViewerConstants {
 	/** BASE_TIME */
 	public static final String END_TIME = "end_time";
 	/** COMMENT_THREAD_XML */
-	public static final String COMMENT_THREAD_XML = "<thread thread=\"%s\" version=\"20061206\" res_from=\"-200\"/>\0";
+	public static final String COMMENT_THREAD_XML = "<thread thread=\"%s\" scores=\"1\" version=\"20061206\" res_from=\"-200\"/>\0";
 
 	/////////// for api ///////////
 	/** getplayerstatusのurl */
@@ -57,6 +57,8 @@ public interface CommentViewerConstants {
 
 	/** プラグイン格納ディレクトリ */
 	public static final String PLUGIN_XML_DIR = "plugins/";
+	/** プラグイン設定格納ディレクトリ */
+	public static final String PLUGIN_DAT_DIR = PLUGIN_XML_DIR + "data/";
 	/** コンフィグ格納ディレクトリ */
 	public static final String CONFIG_DIR = "conf/";
 	/** コテハン設定ファイル */

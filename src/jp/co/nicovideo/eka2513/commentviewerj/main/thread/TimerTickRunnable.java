@@ -2,7 +2,7 @@ package jp.co.nicovideo.eka2513.commentviewerj.main.thread;
 
 import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.main.CommentViewerBase;
-import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
+import jp.co.nicovideo.eka2513.commentviewerj.plugin.PluginBase;
 
 /**
  * pluginのtickメソッドを呼び出します
@@ -11,7 +11,7 @@ import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
  */
 public class TimerTickRunnable implements Runnable {
 
-	private CommentViewerPluginBase plugin;
+	private PluginBase plugin;
 	private CommentViewerBase source;
 	private TimerPluginEvent event;
 
@@ -19,7 +19,7 @@ public class TimerTickRunnable implements Runnable {
 	private TimerTickRunnable() {
 	}
 
-	public TimerTickRunnable(CommentViewerPluginBase plugin, CommentViewerBase source, TimerPluginEvent event) {
+	public TimerTickRunnable(PluginBase plugin, CommentViewerBase source, TimerPluginEvent event) {
 		this.plugin = plugin;
 		this.source = source;
 		this.event = event;

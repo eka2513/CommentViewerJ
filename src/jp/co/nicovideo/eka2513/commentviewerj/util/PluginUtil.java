@@ -20,7 +20,7 @@ import javax.xml.xpath.XPathFactory;
 
 import jp.co.nicovideo.eka2513.commentviewerj.constants.CommentViewerConstants;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentViewerException;
-import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
+import jp.co.nicovideo.eka2513.commentviewerj.plugin.PluginBase;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -32,11 +32,11 @@ public class PluginUtil {
 		PluginUtil.loadPlugins();
 	}
 
-	public static List<CommentViewerPluginBase> loadPlugins() {
+	public static List<PluginBase> loadPlugins() {
 		FileInputStream fis = null;
 		InputStreamReader isr = null;
 		BufferedReader br = null;
-		List<CommentViewerPluginBase> list = new ArrayList<CommentViewerPluginBase>();
+		List<PluginBase> list = new ArrayList<PluginBase>();
 		try {
 			String filename = CommentViewerConstants.PLUGIN_XML_DIR + "plugins.xml";
 			fis = new FileInputStream(new File(filename));
@@ -59,10 +59,11 @@ public class PluginUtil {
 			NodeList entries = (NodeList) xpath.evaluate(location, doc,
 					XPathConstants.NODESET);
 			for (int i = 0; i < entries.getLength(); i++) {
-				CommentViewerPluginBase p = new PluginSettingUtil<CommentViewerPluginBase>().load(
-						CommentViewerConstants.PLUGIN_XML_DIR + entries.item(i).getNodeValue() + ".xml");
+				PluginBase p = new PluginSettingUtil<PluginBase>().load(
+						CommentViewerConstants.PLUGIN_XML_DIR + entries.item(i).getNodeValue() + ".dat");
 				if (p == null) {
 					System.err.println(String.format("%sのロードに失敗しました", entries.item(i).getNodeValue()));
+					continue;
 				}
 				list.add(p);
 			}

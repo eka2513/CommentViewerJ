@@ -17,6 +17,7 @@ import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentServerException;
 import jp.co.nicovideo.eka2513.commentviewerj.main.CommentViewer;
 import jp.co.nicovideo.eka2513.commentviewerj.main.eventlistener.GUIEventListener;
+import jp.co.nicovideo.eka2513.commentviewerj.main.swt.cocoa.CocoaUIEnhancer;
 import jp.co.nicovideo.eka2513.commentviewerj.main.swt.constants.GUIConstants;
 import jp.co.nicovideo.eka2513.commentviewerj.main.swt.widgets.SearchText;
 import jp.co.nicovideo.eka2513.commentviewerj.util.GlobalSettingUtil;
@@ -42,14 +43,19 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -63,6 +69,8 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	CommentViewer commentViewer;
 	private HashMap<Integer, Image> imageCache;
 	private HashMap<Integer, String> userNameCache;
+	private ThreadMessage threadMessage;
+
 	private Combo cmbBrowsers;
 	private SearchText txtLv;
 	private Button btnConnect;
@@ -91,6 +99,30 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	}
 
 	private void createContents() {
+
+		if (PropertyUtil.isMac()) {
+			CocoaUIEnhancer enhancer = new CocoaUIEnhancer();
+			enhancer.earlyStartup();
+		} else {
+			Menu menuBar = new Menu(this, SWT.BAR);
+			MenuItem pluginMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+			pluginMenuHeader.setText("&設定");
+			Menu pluginMenu = new Menu(this, SWT.DROP_DOWN);
+			pluginMenuHeader.setMenu(pluginMenu);
+			MenuItem pluginMenuItem = new MenuItem(pluginMenu, SWT.PUSH);
+			pluginMenuItem.setText("&設定");
+			pluginMenuItem.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent selectionevent) {
+					System.out.println("設定メニューおした");
+				}
+				@Override
+				public void widgetDefaultSelected(SelectionEvent selectionevent) {
+				}
+			});
+		    setMenuBar(menuBar);
+		}
+
 		setSize(800, 420);
 
 		Group group = new Group(this, SWT.NONE | SWT.SINGLE);
@@ -231,7 +263,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 
 		gd = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
 		gd.horizontalSpan = 10;
-		table = new Table(this, SWT.BORDER | SWT.FULL_SELECTION);
+		table = new Table(this, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		table.setLayoutData(gd);
@@ -248,7 +280,11 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		comment.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent keyevent) {
-				if ((keyevent.stateMask & SWT.SHIFT) != 0 && keyevent.character == SWT.CR) {
+			}
+
+			@Override
+			public void keyPressed(KeyEvent keyevent) {
+				if (keyevent.character == SWT.CR) {
 					String iyayo    = (chk184.getSelection() ? "184" : "");
 					String color    = cmbCommentColor.getText().replaceAll("default", "");
 					String size     = cmbCommentSize.getText().replaceAll("default", "");
@@ -273,10 +309,6 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 						e1.printStackTrace();
 					}
 				}
-			}
-
-			@Override
-			public void keyPressed(KeyEvent keyevent) {
 			}
 		});
 
@@ -377,7 +409,104 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 				}
 			}
 		});
+	    table.addListener(SWT.PaintItem, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				TableItem item = (TableItem)event.item;
 
+				//サムネとユーザ名を再セット(lazyload)
+				if (StringUtil.inull2Val(item.getText(8)).toString().equals(item.getText(8))) {
+					Integer userid = StringUtil.inull2Val(item.getText(8));
+					if (imageCache.containsKey(userid)) {
+						item.setImage(0, imageCache.get(userid));
+					}
+					if (userNameCache.containsKey(userid)) {
+						item.setText(7, userNameCache.get(userid));
+					}
+				}
+
+				//NGのライン引き
+				Integer score = StringUtil.inull2Val(item.getText(9));
+				if (score <= -1000) {
+					Color color = getDisplay().getSystemColor(SWT.COLOR_CYAN);
+					if (score <= -10000)
+						color = getDisplay().getSystemColor(SWT.COLOR_RED);
+					else if (score <= -4800)
+						color = getDisplay().getSystemColor(SWT.COLOR_YELLOW);
+					event.gc.setLineStyle(SWT.LINE_DOT);
+					event.gc.setLineWidth(4);
+					event.gc.setForeground(color);
+					event.gc.drawLine(0, item.getBounds().y+item.getBounds().height, item.getBounds(9).x + item.getBounds(9).width, item.getBounds().y+item.getBounds().height);
+				}
+			}
+		});
+
+		// fake tooltip
+	    table.setToolTipText("");
+		final Listener labelListener = new Listener() {
+			public void handleEvent(Event event) {
+				Label label = (Label) event.widget;
+				Shell shell = label.getShell();
+				switch (event.type) {
+				case SWT.MouseDown:
+					Event e = new Event();
+					e.item = (TableItem) label.getData("_TABLEITEM");
+					// Assuming table is single select, set the selection as if
+					// the mouse down event went through to the table
+					table.setSelection(new TableItem[] { (TableItem) e.item });
+					table.notifyListeners(SWT.Selection, e);
+					// fall through
+				case SWT.MouseExit:
+					shell.dispose();
+					break;
+				}
+			}
+		};
+		final Listener tableListener = new Listener() {
+			Shell tip = null;
+			Label label = null;
+
+			public void handleEvent(Event event) {
+				switch (event.type) {
+				case SWT.Dispose:
+				case SWT.KeyDown:
+				case SWT.MouseMove: {
+					if (tip == null)
+						break;
+					tip.dispose();
+					tip = null;
+					label = null;
+					break;
+				}
+				case SWT.MouseHover: {
+					TableItem item = table.getItem(new Point(event.x, event.y));
+					if (item != null) {
+						if (tip != null && !tip.isDisposed())
+							tip.dispose();
+						tip = new Shell(table.getDisplay(), SWT.ON_TOP | SWT.TOOL);
+						tip.setLayout(new FillLayout());
+						label = new Label(tip, SWT.NONE);
+						label.setForeground(getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+						label.setBackground(getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+						label.setData("_TABLEITEM", item);
+						label.setText(item.getText(3));
+						label.addListener(SWT.MouseExit, labelListener);
+						label.addListener(SWT.MouseDown, labelListener);
+						Point size = tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+						Rectangle rect = item.getBounds(0);
+						Point pt = table.toDisplay(rect.x, rect.y);
+						tip.setBounds(pt.x, pt.y, size.x, size.y);
+						tip.setVisible(true);
+					}
+				}
+				}
+			}
+		};
+	    table.addListener(SWT.Dispose, tableListener);
+	    table.addListener(SWT.KeyDown, tableListener);
+	    table.addListener(SWT.MouseMove, tableListener);
+	    table.addListener(SWT.MouseHover, tableListener);
+	    //右クリックメニュー
 	    Menu menu = new Menu(this, SWT.POP_UP);
 	    MenuItem item = new MenuItem(menu, SWT.PUSH);
 	    item.setText("コメントをコピー");
@@ -448,6 +577,37 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 			public void widgetDefaultSelected(SelectionEvent selectionevent) {
 			}
 		});
+
+//		Listener paintListener = new Listener() {
+//			public void handleEvent(Event event) {
+//				switch (event.type) {
+//				case SWT.MeasureItem: {
+//					TableItem item = (TableItem) event.item;
+//					String text = item.getText(event.index);
+//					Point size = event.gc.textExtent(text);
+//					event.width = size.x;
+//					event.height = Math.max(event.height, size.y);
+//					break;
+//				}
+//				case SWT.PaintItem: {
+//					TableItem item = (TableItem) event.item;
+//					String text = item.getText(event.index);
+//					Point size = event.gc.textExtent(text);
+//					int offset2 = event.index == 0 ? Math.max(0,
+//							(event.height - size.y) / 2) : 0;
+//					event.gc.drawText(text, event.x, event.y + offset2, true);
+//					break;
+//				}
+//				case SWT.EraseItem: {
+//					event.detail &= ~SWT.FOREGROUND;
+//					break;
+//				}
+//				}
+//			}
+//		};
+//	    table.addListener(SWT.MeasureItem, paintListener);
+//	    table.addListener(SWT.PaintItem, paintListener);
+//	    table.addListener(SWT.EraseItem, paintListener);
 	    table.setMenu(menu);
 	    imageCache = new HashMap<Integer, Image>();
 	    userNameCache = new HashMap<Integer, String>();
@@ -461,7 +621,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	public void threadReceived(PluginThreadEvent e) {
 		String title = commentViewer.getPlayerstatus().get(LIVE_TITLE);
 		getDisplay().asyncExec(new ThreadMessageRunnable(e.getMessage(), title));
-//		ThreadMessage message = e.getMessage();
+		threadMessage = e.getMessage();
 //		// do nothing
 	}
 
@@ -511,9 +671,12 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		 		String pastTime = SWTUtil.vpos2Time(String.valueOf(100*(now - startTime)));
 				//残り時間
 		 		String elapsedTime = SWTUtil.vpos2Time(String.valueOf(100*(endTime - now)));
+		 		String room = commentViewer.getPlayerstatus().get(ROOM_LABEL);
+		 		if (room.startsWith("co"))
+		 			room = "アリーナ";
 		 		lblTime.setText(String.format("%s %s:%s 経過時間:%s 残り時間:%s 来場者:%s コメント:%s アクティブ:%s",
 		 				commentViewer.getPlayerstatus().get(DEFAULT_COMMUNITY),
-		 				commentViewer.getPlayerstatus().get(ROOM_LABEL),
+		 				room,
 		 				commentViewer.getPlayerstatus().get(SEET_NO),
 		 				pastTime, elapsedTime,
 		 				commentViewer.getPlayerstatus().get(WATCH_COUNT),
@@ -574,7 +737,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 
 		@Override
 		public void run() {
-			TableItem item = new TableItem(table, SWT.NULL);
+			TableItem item = new TableItem(table, SWT.MULTI | SWT.WRAP | SWT.BORDER);
 			String userName = "";
 			if (StringUtil.inull2Val(message.getUser_id()).toString().equals(message.getUser_id())) {
 				Integer userid = StringUtil.inull2Val(message.getUser_id());
@@ -640,7 +803,9 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 					StringUtil.null2Val(message.getScore()),
 			};
 			item.setText(data);
-			table.showItem(item);
+			if (StringUtil.inull2Val(message.getNo()) == 0 || StringUtil.inull2Val(threadMessage.getLast_res()) < StringUtil.inull2Val(message.getNo())) {
+				table.showItem(item);
+			}
 		}
 
 	}
@@ -652,6 +817,5 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	public HashMap<Integer,String> getUserNameCache() {
 	    return userNameCache;
 	}
-
 
 }

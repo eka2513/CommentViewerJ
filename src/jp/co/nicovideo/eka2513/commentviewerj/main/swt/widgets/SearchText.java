@@ -12,20 +12,20 @@ public abstract class SearchText extends Text implements KeyListener {
 		super(parent, SWT.SEARCH | SWT.ICON_CANCEL | SWT.SINGLE | SWT.BORDER );
 		setMessage(placeholder);
 		addKeyListener(this);
+//		addlisterner();
 	}
-
 	@Override
 	public void keyReleased(KeyEvent event) {
-		if (event.character == SWT.CR)
+	}
+	@Override
+	public void keyPressed(KeyEvent event) {
+		if (event.character == SWT.CR) {
 			enterKeyDetected();
+		}
 	}
 
 	public abstract void enterKeyDetected();
 
-	@Override
-	public void keyPressed(KeyEvent event) {
-		//do noting
-	}
 
 	@Override
 	protected void checkSubclass() {

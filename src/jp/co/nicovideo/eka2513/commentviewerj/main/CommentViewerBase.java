@@ -20,15 +20,15 @@ import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.PluginSendEventListe
 import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.TimerPluginEventListener;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentServerException;
-import jp.co.nicovideo.eka2513.commentviewerj.main.settings.CommentThread;
 import jp.co.nicovideo.eka2513.commentviewerj.main.settings.GlobalSetting;
 import jp.co.nicovideo.eka2513.commentviewerj.main.thread.CommentReceivedRunnable;
 import jp.co.nicovideo.eka2513.commentviewerj.main.thread.CommentResultReceivedRunnable;
+import jp.co.nicovideo.eka2513.commentviewerj.main.thread.CommentThread;
 import jp.co.nicovideo.eka2513.commentviewerj.main.thread.ConnectedRunnable;
 import jp.co.nicovideo.eka2513.commentviewerj.main.thread.DisconnectedRunnable;
 import jp.co.nicovideo.eka2513.commentviewerj.main.thread.ThreadReceivedRunnable;
 import jp.co.nicovideo.eka2513.commentviewerj.main.thread.TimerTickRunnable;
-import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
+import jp.co.nicovideo.eka2513.commentviewerj.plugin.PluginBase;
 import jp.co.nicovideo.eka2513.commentviewerj.util.CommentUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.GlobalSettingUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.NicoRequestUtil;
@@ -50,7 +50,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 	protected Map<String, Long> activeCache;
 	protected HashMap<String, String> handleNameCache;
 
-	protected List<CommentViewerPluginBase> plugins;
+	protected List<PluginBase> plugins;
 
 	protected Timer timer;
 
@@ -118,7 +118,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 //		plugins.add(this);
 		plugins = PluginUtil.loadPlugins();
 		//イベントリスナを登録
-		for (CommentViewerPluginBase p : plugins) {
+		for (PluginBase p : plugins) {
 			p.addListener(this);
 		}
 
@@ -186,14 +186,14 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 				threadMessage = message;
 				lastCommentNo = StringUtil.inull2Val(threadMessage.getLast_res());
 				PluginThreadEvent event = new PluginThreadEvent(this, message);
-				for (CommentViewerPluginBase p : plugins) {
+				for (PluginBase p : plugins) {
 					new Thread(new ThreadReceivedRunnable(p, this, event)).start();
 				}
 			} else if (tag.startsWith("<chat_result")) {
 				//chat_resultタグ
 				ChatResultMessage message = XMLUtil.getChatResultMessage(tag);
 				PluginCommentEvent event = new PluginCommentEvent(this, message);
-				for (CommentViewerPluginBase p : plugins) {
+				for (PluginBase p : plugins) {
 					new Thread(new ConnectedRunnable(p, this)).start();
 					new Thread(new CommentResultReceivedRunnable(p, this, event)).start();
 				}
@@ -211,7 +211,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 				if (message.getText().startsWith("/disconnect")
 						&& message.getPremium().equals(PremiumConstants.SYSTEM_UNEI.toString())) {
 					//放送終了
-					for (CommentViewerPluginBase p : plugins) {
+					for (PluginBase p : plugins) {
 						new Thread(new DisconnectedRunnable(p, this)).start();
 					}
 					disconnect();
@@ -251,14 +251,14 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 						m.setNo(String.valueOf(lastCommentNo+i));
 						m.setNgComment(true);
 						PluginCommentEvent event = new PluginCommentEvent(this, m);
-						for (CommentViewerPluginBase p : plugins) {
+						for (PluginBase p : plugins) {
 							new Thread(new CommentReceivedRunnable(p, this, event)).start();
 						}
 					}
 				}
 				lastCommentNo = StringUtil.inull2Val(message.getNo());
 				PluginCommentEvent event = new PluginCommentEvent(this, message, calcActive());
-				for (CommentViewerPluginBase p : plugins) {
+				for (PluginBase p : plugins) {
 					new Thread(new CommentReceivedRunnable(p, this, event)).start();
 				}
 			}
@@ -275,7 +275,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 		String vpos = CommentUtil.calcVpos(baseTime, e.getCurrentTime().toString());
 		e.setVpos(Integer.valueOf(vpos));
 		//プラグインのtickメソッドを呼び出す
-		for (CommentViewerPluginBase plugin : plugins) {
+		for (PluginBase plugin : plugins) {
 			new Thread(new TimerTickRunnable(plugin, this, e)).start();
 		}
 	}

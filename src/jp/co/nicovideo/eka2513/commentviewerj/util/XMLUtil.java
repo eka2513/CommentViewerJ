@@ -60,7 +60,7 @@ public class XMLUtil implements CommentViewerConstants {
 		return message;
 	}
 
-	public static ChatMessage getChatMessage(String xml) {
+	public synchronized static ChatMessage getChatMessage(String xml) {
 		ChatMessage message = new ChatMessage();
 		try {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance()

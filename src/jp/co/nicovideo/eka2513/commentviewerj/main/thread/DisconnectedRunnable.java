@@ -1,7 +1,7 @@
 package jp.co.nicovideo.eka2513.commentviewerj.main.thread;
 
 import jp.co.nicovideo.eka2513.commentviewerj.main.CommentViewerBase;
-import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
+import jp.co.nicovideo.eka2513.commentviewerj.plugin.PluginBase;
 
 /**
  * pluginのdisconnectedメソッドを呼び出します
@@ -10,14 +10,14 @@ import jp.co.nicovideo.eka2513.commentviewerj.plugin.CommentViewerPluginBase;
  */
 public class DisconnectedRunnable implements Runnable {
 
-	private CommentViewerPluginBase plugin;
+	private PluginBase plugin;
 	private CommentViewerBase source;
 
 	@SuppressWarnings("unused")
 	private DisconnectedRunnable() {
 	}
 
-	public DisconnectedRunnable(CommentViewerPluginBase plugin, CommentViewerBase source) {
+	public DisconnectedRunnable(PluginBase plugin, CommentViewerBase source) {
 		this.plugin = plugin;
 		this.source = source;
 	}
