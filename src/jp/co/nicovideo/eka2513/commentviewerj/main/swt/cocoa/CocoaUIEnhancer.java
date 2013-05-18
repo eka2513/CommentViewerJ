@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import jp.co.nicovideo.eka2513.commentviewerj.main.swt.SettingWindow;
 import jp.co.nicovideo.eka2513.commentviewerj.main.swt.constants.GUIConstants;
 
 import org.eclipse.swt.SWT;
@@ -162,12 +163,16 @@ public class CocoaUIEnhancer {
      */
     private String fHideActionName;
 
+    private Display display;
+
     /**
      * Constructor
      *
      * @param actions Application event handler.
      */
-    public CocoaUIEnhancer() {
+    public CocoaUIEnhancer(Display display) {
+
+    	this.display = display;
 
         fAboutActionName = GUIConstants.APPLICATION_NAME + " について";
 
@@ -342,7 +347,7 @@ public class CocoaUIEnhancer {
      * This method is called when preferences menu item is selected.
      */
     void preferencesMenuItemSelected() {
-        new Thread(new PreferencesRunnable()).start();
+    	new SettingWindow(display).open();
     }
 
     /**

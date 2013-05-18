@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <plugins>
- <plugin class="jp.co.nicovideo.eka2513.commentviewerj.plugin.sample.SimplePlugin"/>
- <plugin class="re.maku.commentviewerj.boatrace.odds.plugins.OddsPlugin"/>
+  <plugin class="jp.co.nicovideo.eka2513.commentviewerj.plugin.sample.SimplePlugin"/>
 </plugins>

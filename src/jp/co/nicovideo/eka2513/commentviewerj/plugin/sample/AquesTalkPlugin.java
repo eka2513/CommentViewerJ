@@ -20,9 +20,9 @@ public class AquesTalkPlugin extends PluginBase {
 //		System.out.println(System.getProperty("java.library.path"));
 	}
 
-	static {
-		System.loadLibrary("Boyomi");
-	}
+//	static {
+//		System.loadLibrary("Boyomi");
+//	}
 
 	private Integer speed = 20;
 	private String phont  = "aq_m4b.phont";
@@ -44,6 +44,7 @@ public class AquesTalkPlugin extends PluginBase {
 		//NGコメと/から始まるコメ以外を読む
 		if (!e.getMessage().isNgComment() && !e.getMessage().getText().startsWith("/")) {
 			if (PropertyUtil.isMac()) {
+				System.loadLibrary("Boyomi");
 				System.out.println(speech("あいうえお", 100, null));
 			} else if (PropertyUtil.isWindows()) {
 				System.out.println(speech("あいうえお", 100, null));

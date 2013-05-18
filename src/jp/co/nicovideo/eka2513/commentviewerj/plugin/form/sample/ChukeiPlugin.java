@@ -8,19 +8,31 @@ import jp.co.nicovideo.eka2513.commentviewerj.plugin.form.FormPluginBase;
 import jp.co.nicovideo.eka2513.commentviewerj.util.PluginSettingUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.SerializerUtil;
 
+import org.eclipse.swt.widgets.Display;
+
 public class ChukeiPlugin extends FormPluginBase<ChukeiPluginForm, ChukeiPluginSetting> {
 
 	private static final long serialVersionUID = 2625243439269616176L;
 
 	public static void main(String[] args) {
-		ChukeiPlugin plugin = new ChukeiPlugin(ChukeiPluginForm.class, ChukeiPluginSetting.class);
+		ChukeiPlugin plugin = new ChukeiPlugin(new Display(), ChukeiPluginForm.class, ChukeiPluginSetting.class);
 		new PluginSettingUtil<ChukeiPlugin>().save(plugin);
 		ChukeiPluginSetting setting = plugin.getSetting();
 		new SerializerUtil<ChukeiPluginSetting>().save(plugin.getSettingFilename(), setting);
 	}
 
-	public ChukeiPlugin(Class<ChukeiPluginForm> clazzF, Class<ChukeiPluginSetting> clazzS) {
-		super(clazzF, clazzS);
+	/**
+	 * コンストラクタ必ず作成する
+	 */
+	public ChukeiPlugin() {
+		super();
+	}
+
+	/**
+	 * コンストラクタ必ず作成する
+	 */
+	public ChukeiPlugin(Display display, Class<ChukeiPluginForm> clazzF, Class<ChukeiPluginSetting> clazzS) {
+		super(display, clazzF, clazzS);
 	}
 
 	@Override
@@ -32,8 +44,7 @@ public class ChukeiPlugin extends FormPluginBase<ChukeiPluginForm, ChukeiPluginS
 	}
 
 	@Override
-	public void commentResultReceived(CommentViewerBase source,
-			PluginCommentEvent e) {
+	public void commentResultReceived(CommentViewerBase source, PluginCommentEvent e) {
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public abstract class PluginBase implements CommetViewerPlugin {
 	private PluginSendEventListener listener;
 
 	/** プラグインの名称 */
-	public abstract String getName();
+	public abstract  String getName();
 
 	/** プラグインの名称 */
 	public abstract String getVersion();

@@ -20,5 +20,8 @@
 	<classpathentry kind="lib" path="/Applications/Pleiades All In One 3.7/plugins/com.ibm.icu_4.4.2.v20110823.jar"/>
 	<classpathentry kind="lib" path="/Applications/Pleiades All In One 3.7/plugins/org.eclipse.ui.forms_3.5.101.v20111011-1919.jar"/>
 	<classpathentry kind="lib" path="lib/swt-4.2.2-cocoa-macosx-x86_64.jar"/>
+	<classpathentry kind="lib" path="lib/reflections-0.9.9-RC1-uberjar.jar"/>
+	<classpathentry kind="lib" path="lib/guava-14.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/javassist.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

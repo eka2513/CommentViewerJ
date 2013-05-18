@@ -31,6 +31,7 @@ import jp.nicovideo.eka2513.cookiegetter4j.util.PropertyUtil;
 import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -63,6 +64,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 
 public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUIEventListener {
 
@@ -101,7 +103,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	private void createContents() {
 
 		if (PropertyUtil.isMac()) {
-			CocoaUIEnhancer enhancer = new CocoaUIEnhancer();
+			CocoaUIEnhancer enhancer = new CocoaUIEnhancer(getDisplay());
 			enhancer.earlyStartup();
 		} else {
 			Menu menuBar = new Menu(this, SWT.BAR);
@@ -114,7 +116,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 			pluginMenuItem.addSelectionListener(new SelectionListener() {
 				@Override
 				public void widgetSelected(SelectionEvent selectionevent) {
-					System.out.println("設定メニューおした");
+			    	new SettingWindow(getDisplay()).open();
 				}
 				@Override
 				public void widgetDefaultSelected(SelectionEvent selectionevent) {
@@ -129,7 +131,6 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         group.setLayoutData(gd);
         group.setLayout(new GridLayout(10, false));
-
 
 		gd = new GridData();
 		gd.horizontalSpan = 1;
@@ -391,7 +392,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		lblTime.setLayoutData(gd);
 
 		/////////// テーブルの初期処理 ///////////
-		 // ヘッダを設定image no comment handle 184 premium username userid
+		// ヘッダを設定image no comment handle 184 premium username userid
 	    String[] cols = {"サムネ","NO","時間","コメント","ハンドル","184","タイプ","ユーザ名","ユーザID","スコア"};
 	    Integer[] sizes = new Integer[] {40, 40, 60, 350, 80, 30, 40, 80, 80, 40};
 	    for(int i=0;i<cols.length;i++){
@@ -506,6 +507,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	    table.addListener(SWT.KeyDown, tableListener);
 	    table.addListener(SWT.MouseMove, tableListener);
 	    table.addListener(SWT.MouseHover, tableListener);
+
 	    //右クリックメニュー
 	    Menu menu = new Menu(this, SWT.POP_UP);
 	    MenuItem item = new MenuItem(menu, SWT.PUSH);
@@ -707,6 +709,8 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 				radioCommentTypeBSP.setSelection(false);
 				radioCommentTypeListener.setSelection(false);
 				cmbCommentColor.removeAll();
+				cmbCommentColor.setItems(BSP_COLORS);
+				cmbCommentColor.select(0);
 			} else if (commentViewer.isBSP()) {
 				radioCommentTypeUnei.setEnabled(false);
 				radioCommentTypeBSP.setEnabled(true);
@@ -715,6 +719,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 				radioCommentTypeListener.setSelection(false);
 				cmbCommentColor.removeAll();
 				cmbCommentColor.setItems(BSP_COLORS);
+				cmbCommentColor.select(0);
 			} else {
 				radioCommentTypeUnei.setEnabled(false);
 				radioCommentTypeBSP.setEnabled(false);
@@ -723,6 +728,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 				radioCommentTypeListener.setSelection(true);
 				cmbCommentColor.removeAll();
 				cmbCommentColor.setItems(LISTENER_COLORS);
+				cmbCommentColor.select(0);
 			}
 		}
 	}
@@ -802,6 +808,18 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 					StringUtil.null2Val(message.getUser_id()),
 					StringUtil.null2Val(message.getScore()),
 			};
+
+			String[] links = StringUtil.groupMatch(MATCH_URL, StringUtil.null2Val(message.getText()).trim());
+			//TODO URL自動リンク
+			if (links.length > 0) {
+				for (String l : links ) {
+					Hyperlink link = new Hyperlink(table, SWT.WRAP);
+					link.setText(l);
+					TableEditor editor = new TableEditor(table);
+					editor.setEditor(link, item, 3);
+				}
+			}
+
 			item.setText(data);
 			if (StringUtil.inull2Val(message.getNo()) == 0 || StringUtil.inull2Val(threadMessage.getLast_res()) < StringUtil.inull2Val(message.getNo())) {
 				table.showItem(item);

@@ -8,6 +8,8 @@ import jp.co.nicovideo.eka2513.commentviewerj.main.swt.constants.GUIConstants;
 import jp.co.nicovideo.eka2513.commentviewerj.plugin.PluginBase;
 import jp.co.nicovideo.eka2513.commentviewerj.util.SerializerUtil;
 
+import org.eclipse.swt.widgets.Display;
+
 /**
  * <pre>
  * フォームを使用するプラグインの基底クラス
@@ -26,6 +28,8 @@ public abstract class FormPluginBase<F extends FormBase<S>, S extends FormPlugin
 	private Class<S> clazzS;
 	/** フォームのクラス */
 	private Class<F> clazzF;
+	/** display */
+	private Display display;
 
 	/**
 	 * コンストラクタ
@@ -53,9 +57,10 @@ public abstract class FormPluginBase<F extends FormBase<S>, S extends FormPlugin
 	 * @param clazzF
 	 * @param clazzS
 	 */
-	public FormPluginBase(Class<F> clazzF, Class<S> clazzS) {
+	public FormPluginBase(Display display, Class<F> clazzF, Class<S> clazzS) {
 		this.clazzS = clazzS;
 		this.clazzF = clazzF;
+		this.display = display;
 		setting = new SerializerUtil<S>().load(getSettingFilename());
 		if (setting == null) {
 			createSetting();
@@ -80,9 +85,9 @@ public abstract class FormPluginBase<F extends FormBase<S>, S extends FormPlugin
 	 */
 	private final F createForm() {
 		try {
-			Class<?>[] types = new Class<?>[]{clazzS, String.class};
+			Class<?>[] types = new Class<?>[]{Display.class, clazzS, String.class};
 			Constructor<F> constructor = clazzF.getConstructor(types);
-			Object[] args = new Object[]{setting, GUIConstants.PLUGIN_DAT_DIR + clazzS.getName() + ".dat"};
+			Object[] args = new Object[]{display, setting, GUIConstants.PLUGIN_DAT_DIR + clazzS.getName() + ".dat"};
 			return (F) constructor.newInstance(args);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -100,8 +105,10 @@ public abstract class FormPluginBase<F extends FormBase<S>, S extends FormPlugin
 	 */
 	public final void formOpen() {
 		F form = createForm();
-		if (form != null)
+		if (form != null) {
 			form.open();
+			form.setText(getName() + " ver." + getVersion());
+		}
 	}
 
 	/**
