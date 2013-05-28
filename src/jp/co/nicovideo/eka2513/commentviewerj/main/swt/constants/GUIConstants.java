@@ -15,6 +15,7 @@ public interface GUIConstants extends CommentViewerConstants {
 
 	public static final String IMAGE_CACHE_FILE = CONFIG_DIR + "thumb.cache";
 	public static final String USERNAME_CACHE_FILE = CONFIG_DIR + "username.dat";
+	public static final String USERCOLOR_CACHE_FILE = CONFIG_DIR + "usercolor.dat";
 
 	public static final String MATCH_URL =
 			  "(https?:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+)";

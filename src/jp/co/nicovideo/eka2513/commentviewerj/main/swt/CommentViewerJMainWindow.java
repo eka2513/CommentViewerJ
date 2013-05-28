@@ -20,25 +20,30 @@ import jp.co.nicovideo.eka2513.commentviewerj.main.eventlistener.GUIEventListene
 import jp.co.nicovideo.eka2513.commentviewerj.main.swt.cocoa.CocoaUIEnhancer;
 import jp.co.nicovideo.eka2513.commentviewerj.main.swt.constants.GUIConstants;
 import jp.co.nicovideo.eka2513.commentviewerj.main.swt.widgets.SearchText;
+import jp.co.nicovideo.eka2513.commentviewerj.main.thread.UserNameRunnable;
 import jp.co.nicovideo.eka2513.commentviewerj.util.GlobalSettingUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.NicoRequestUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.NicoStringUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.SWTUtil;
 import jp.co.nicovideo.eka2513.commentviewerj.util.SerializerUtil;
-import jp.co.nicovideo.eka2513.commentviewerj.util.XMLUtil;
 import jp.nicovideo.eka2513.cookiegetter4j.cookie.NicoCookieManagerFactory;
 import jp.nicovideo.eka2513.cookiegetter4j.util.PropertyUtil;
 import jp.nicovideo.eka2513.cookiegetter4j.util.StringUtil;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -51,6 +56,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -64,13 +70,13 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 
 public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUIEventListener {
 
 	CommentViewer commentViewer;
 	private HashMap<Integer, Image> imageCache;
 	private HashMap<Integer, String> userNameCache;
+	private HashMap<String, RGB> colorCache;
 	private ThreadMessage threadMessage;
 
 	private Combo cmbBrowsers;
@@ -82,6 +88,8 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	private Button radioCommentTypeListener;
 	private Button radioCommentTypeBSP;
 	private Button radioCommentTypeUnei;
+
+	private Text txtBspName;
 
 	private Button chk184;
 
@@ -98,6 +106,17 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	public CommentViewerJMainWindow(Display display) {
 		super(display, SWT.SHELL_TRIM | SWT.APPLICATION_MODAL);
 		createContents();
+		initialize();
+	}
+
+	/**
+	 * オブジェクトをセット後に呼ばれる初期処理
+	 */
+	private void initialize() {
+		//BSP名をユーザ名自動セット
+		if (txtBspName.getText().length() == 0) {
+			getDisplay().asyncExec(new UserNameRunnable(cmbBrowsers.getText(), txtBspName));
+		}
 	}
 
 	private void createContents() {
@@ -124,6 +143,14 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 			});
 		    setMenuBar(menuBar);
 		}
+
+		//widget disposed
+		addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent disposeevent) {
+				commentViewer.disconnect();
+			}
+		});
 
 		setSize(800, 420);
 
@@ -154,6 +181,11 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 					return;
 				}
 				commentViewer.setBrowser(cmbBrowsers.getText());
+
+				if (commentViewer.isConnected()) {
+					commentViewer.disconnect();
+					table.removeAll();
+				}
 				try {
 					commentViewer.connect();
 				} catch (CommentServerException e1) {
@@ -240,6 +272,9 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 					commentViewer.setBrowser(cmbBrowsers.getText());
 					commentViewer.setLv(lv);
 					commentViewer.setCookie(cookie);
+					if (commentViewer.isConnected())
+						commentViewer.disconnect();
+
 					try {
 						commentViewer.connect();
 					} catch (CommentServerException e1) {
@@ -272,10 +307,10 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		Group footer = new Group(this, SWT.NONE);
         gd = new GridData(GridData.FILL_HORIZONTAL);
         footer.setLayoutData(gd);
-        footer.setLayout(new GridLayout(20, false));
+        footer.setLayout(new GridLayout(8, false));
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 20;
+		gd.horizontalSpan = 8;
 		comment = new Text(footer, SWT.BORDER);
 		comment.setLayoutData(gd);
 		comment.addKeyListener(new KeyListener() {
@@ -296,13 +331,19 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 							PluginSendEvent e = new PluginSendEvent(this, mail, comment.getText().trim(), "BSP");
 							commentViewer.sendComment(e);
 						} else if (radioCommentTypeBSP.getSelection()) {
-							PluginSendEvent e = new PluginSendEvent(this, color, comment.getText().trim(), "BSP", color);
+							String name = txtBspName.getText().trim();
+							if (name.length() == 0)
+								name = "BSP";
+							PluginSendEvent e = new PluginSendEvent(this, color, comment.getText().trim(), name, color);
 							if (commentViewer.isBroadcaster())
 								commentViewer.sendUneiBSPComment(e);
 							else
 								commentViewer.sendBSPComment(e);
 						} else if (radioCommentTypeUnei.getSelection()) {
-							PluginSendEvent e = new PluginSendEvent(this, color, comment.getText().trim(), "");
+							String name = txtBspName.getText().trim();
+							if (name.length() == 0)
+								name = "";
+							PluginSendEvent e = new PluginSendEvent(this, color, comment.getText().trim(), name);
 							commentViewer.sendUneiComment(e);
 						}
 						comment.setText("");
@@ -314,7 +355,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		});
 
 		gd = new GridData();
-		gd.horizontalSpan = 2;
+//		gd.horizontalSpan = 3;
 		radioCommentTypeListener = new Button(footer, SWT.RADIO);
 		radioCommentTypeListener.setText("通常");
 		radioCommentTypeListener.setSelection(true);
@@ -325,6 +366,9 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 				cmbCommentColor.removeAll();
 				cmbCommentColor.setItems(LISTENER_COLORS);
 				cmbCommentColor.select(0);
+				cmbCommentPosition.setVisible(true);
+				cmbCommentSize.setVisible(true);
+				txtBspName.setVisible(false);
 			}
 
 			@Override
@@ -341,6 +385,9 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 				cmbCommentColor.removeAll();
 				cmbCommentColor.setItems(BSP_COLORS);
 				cmbCommentColor.select(0);
+				cmbCommentPosition.setVisible(false);
+				cmbCommentSize.setVisible(false);
+				txtBspName.setVisible(true);
 			}
 
 			@Override
@@ -357,6 +404,9 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 				cmbCommentColor.removeAll();
 				cmbCommentColor.setItems(BSP_COLORS);
 				cmbCommentColor.select(0);
+				cmbCommentPosition.setVisible(false);
+				cmbCommentSize.setVisible(false);
+				txtBspName.setVisible(true);
 			}
 
 			@Override
@@ -364,12 +414,35 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 			}
 		});
 
-		chk184 = new Button(footer, SWT.CHECK);
-		chk184.setText("184");
-//		chk184.setLayoutData(gd);
+		gd = new GridData(GridData.FILL_HORIZONTAL);
+//		gd.horizontalSpan = 6;
+		txtBspName = new Text(footer, SWT.BORDER | SWT.SINGLE);
+		txtBspName.setText(StringUtil.null2Val(commentViewer.getGlobalSetting().getGeneralSetting().getBspName()));
+		txtBspName.setLayoutData(gd);
+		txtBspName.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent modifyevent) {
+				commentViewer.getGlobalSetting().getGeneralSetting().setBspName(txtBspName.getText());
+			}
+		});
+		txtBspName.addFocusListener(new FocusListener() {
+			@Override
+			public void focusLost(FocusEvent focusevent) {
+				commentViewer.getGlobalSetting().getGeneralSetting().setBspName(txtBspName.getText());
+			}
+			@Override
+			public void focusGained(FocusEvent focusevent) {
+			}
+		});
 
 		gd = new GridData();
-		gd.horizontalSpan = 4;
+//		gd.horizontalSpan = 3;
+		chk184 = new Button(footer, SWT.CHECK);
+		chk184.setText("184");
+		chk184.setLayoutData(gd);
+
+		gd = new GridData();
+//		gd.horizontalSpan = 4;
 		cmbCommentColor = new Combo(footer, SWT.READ_ONLY);
 		cmbCommentColor.setItems(LISTENER_COLORS);
 		cmbCommentColor.select(0);
@@ -386,7 +459,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		cmbCommentSize.setLayoutData(gd);
 
 		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = 20;
+		gd.horizontalSpan = 8;
 		lblTime = new Label(footer, SWT.NONE);
 		lblTime.setText("0:00:00 0:00:00");
 		lblTime.setLayoutData(gd);
@@ -414,18 +487,23 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 			@Override
 			public void handleEvent(Event event) {
 				TableItem item = (TableItem)event.item;
-
 				//サムネとユーザ名を再セット(lazyload)
 				if (StringUtil.inull2Val(item.getText(8)).toString().equals(item.getText(8))) {
 					Integer userid = StringUtil.inull2Val(item.getText(8));
 					if (imageCache.containsKey(userid)) {
 						item.setImage(0, imageCache.get(userid));
 					}
-					if (userNameCache.containsKey(userid)) {
-						item.setText(7, userNameCache.get(userid));
-					}
 				}
-
+				String userid = item.getText(8);
+				if (userNameCache.containsKey(userid)) {
+					item.setText(7, userNameCache.get(userid));
+				}
+				if  (colorCache.containsKey(userid)) {
+					item.setBackground(new Color(getDisplay(), colorCache.get(userid)));
+				}
+				if (commentViewer.getHandleNameCache().containsKey(userid)) {
+					item.setText(4, commentViewer.getHandleNameCache().get(userid));
+				}
 				//NGのライン引き
 				Integer score = StringUtil.inull2Val(item.getText(9));
 				if (score <= -1000) {
@@ -580,39 +658,36 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 			}
 		});
 
-//		Listener paintListener = new Listener() {
-//			public void handleEvent(Event event) {
-//				switch (event.type) {
-//				case SWT.MeasureItem: {
-//					TableItem item = (TableItem) event.item;
-//					String text = item.getText(event.index);
-//					Point size = event.gc.textExtent(text);
-//					event.width = size.x;
-//					event.height = Math.max(event.height, size.y);
-//					break;
-//				}
-//				case SWT.PaintItem: {
-//					TableItem item = (TableItem) event.item;
-//					String text = item.getText(event.index);
-//					Point size = event.gc.textExtent(text);
-//					int offset2 = event.index == 0 ? Math.max(0,
-//							(event.height - size.y) / 2) : 0;
-//					event.gc.drawText(text, event.x, event.y + offset2, true);
-//					break;
-//				}
-//				case SWT.EraseItem: {
-//					event.detail &= ~SWT.FOREGROUND;
-//					break;
-//				}
-//				}
-//			}
-//		};
-//	    table.addListener(SWT.MeasureItem, paintListener);
-//	    table.addListener(SWT.PaintItem, paintListener);
-//	    table.addListener(SWT.EraseItem, paintListener);
+	    MenuItem itemUserColor = new MenuItem(menu,  SWT.PUSH);
+	    itemUserColor.setText("ユーザに色を付ける");
+	    itemUserColor.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent selectionevent) {
+				TableItem[] items = table.getSelection();
+				if (items != null && items.length > 0) {
+					ColorDialog dialog = new ColorDialog(getShell());
+					RGB color = dialog.open();
+					if (color == null)
+						return;
+					TableItem item = items[0];
+					String userid = item.getText(8);
+					colorCache.put(userid, color);
+					new SerializerUtil<HashMap<String, RGB>>().save(USERCOLOR_CACHE_FILE, colorCache);
+				}
+			}
+			@Override
+			public void widgetDefaultSelected(SelectionEvent selectionevent) {
+			}
+		});
+
 	    table.setMenu(menu);
 	    imageCache = new HashMap<Integer, Image>();
-	    userNameCache = new HashMap<Integer, String>();
+	    userNameCache = new SerializerUtil<HashMap<Integer, String>>().load(USERNAME_CACHE_FILE);
+	    if (userNameCache == null)
+	    	userNameCache = new HashMap<Integer, String>();
+	    colorCache = new SerializerUtil<HashMap<String, RGB>>().load(USERCOLOR_CACHE_FILE);
+	    if (colorCache == null)
+	    	colorCache = new HashMap<String, RGB>();
 	}
 
 	private void setTableData(ChatMessage message) {
@@ -620,10 +695,10 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	}
 
 	@Override
-	public void threadReceived(PluginThreadEvent e) {
+	public void threadReceived(final PluginThreadEvent e) {
 		String title = commentViewer.getPlayerstatus().get(LIVE_TITLE);
-		getDisplay().asyncExec(new ThreadMessageRunnable(e.getMessage(), title));
 		threadMessage = e.getMessage();
+		getDisplay().asyncExec(new ThreadMessageRunnable(threadMessage, title));
 //		// do nothing
 	}
 
@@ -635,7 +710,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 
 	@Override
 	public void commentResultReceived(PluginCommentEvent e) {
-		System.out.println("commentResultReceived");
+//		System.out.println("commentResultReceived");
 		// set comment to table
 //		ChatResultMessage message = e.getResult();
 		// error handling
@@ -643,7 +718,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 
 	@Override
 	public void disconnectReceived() {
-		System.out.println("disconnected");
+//		System.out.println("disconnected");
 		getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -655,15 +730,13 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 
 	@Override
 	public void connectReceived() {
-		System.out.println("connected");
+		//TODO connected
+//		System.out.println("connected");
 	}
 
 	@Override
-	public void ticked(TimerPluginEvent e) {
-		//30秒毎にplayerstatus更新
-		if (e.getVpos() % (100*30) == 0)
-			commentViewer.setPlayerstatus(XMLUtil.parsePlayerStatus(new NicoRequestUtil(commentViewer.getCookie()).getPlayerStatus(commentViewer.getLv())));
- 		getDisplay().asyncExec(new Runnable() {
+	public void ticked(TimerPluginEvent event) {
+		getDisplay().asyncExec(new Runnable() {
 			@Override
 			public void run() {
 				Long endTime = Long.valueOf(commentViewer.getPlayerstatus().get(END_TIME));
@@ -686,7 +759,6 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 		 				commentViewer.getActive()));
 			}
 		});
-//		System.out.println("ticked");
 	}
 
 	class ThreadMessageRunnable implements Runnable {
@@ -701,34 +773,42 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 			if (message == null)
 				return;
 			setText(StringUtil.null2Val(title));
-//			setText(title);
 			if (commentViewer.isBroadcaster()) {
 				radioCommentTypeUnei.setEnabled(true);
 				radioCommentTypeBSP.setEnabled(true);
 				radioCommentTypeUnei.setSelection(true);
 				radioCommentTypeBSP.setSelection(false);
 				radioCommentTypeListener.setSelection(false);
+				cmbCommentPosition.setVisible(false);
+				cmbCommentSize.setVisible(false);
 				cmbCommentColor.removeAll();
 				cmbCommentColor.setItems(BSP_COLORS);
 				cmbCommentColor.select(0);
+				txtBspName.setVisible(true);
 			} else if (commentViewer.isBSP()) {
 				radioCommentTypeUnei.setEnabled(false);
 				radioCommentTypeBSP.setEnabled(true);
 				radioCommentTypeUnei.setSelection(false);
 				radioCommentTypeBSP.setSelection(true);
 				radioCommentTypeListener.setSelection(false);
+				cmbCommentPosition.setVisible(false);
+				cmbCommentSize.setVisible(false);
 				cmbCommentColor.removeAll();
 				cmbCommentColor.setItems(BSP_COLORS);
 				cmbCommentColor.select(0);
+				txtBspName.setVisible(true);
 			} else {
 				radioCommentTypeUnei.setEnabled(false);
 				radioCommentTypeBSP.setEnabled(false);
 				radioCommentTypeUnei.setSelection(false);
 				radioCommentTypeBSP.setSelection(false);
 				radioCommentTypeListener.setSelection(true);
+				cmbCommentPosition.setVisible(true);
+				cmbCommentSize.setVisible(true);
 				cmbCommentColor.removeAll();
 				cmbCommentColor.setItems(LISTENER_COLORS);
 				cmbCommentColor.select(0);
+				txtBspName.setVisible(false);
 			}
 		}
 	}
@@ -741,9 +821,11 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 			this.message = message;
 		}
 
+		TableItem item = null;
+
 		@Override
 		public void run() {
-			TableItem item = new TableItem(table, SWT.MULTI | SWT.WRAP | SWT.BORDER);
+			item = new TableItem(table, SWT.VIRTUAL | SWT.BORDER);
 			String userName = "";
 			if (StringUtil.inull2Val(message.getUser_id()).toString().equals(message.getUser_id())) {
 				Integer userid = StringUtil.inull2Val(message.getUser_id());
@@ -755,7 +837,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 						@Override
 						public void run() {
 							Integer userid = StringUtil.inull2Val(message.getUser_id());
-							//<title>uyuさんのユーザーページ - niconico</title>
+							//<title>___さんのユーザーページ - niconico</title>
 							String html = StringUtil.null2Val(new NicoRequestUtil(commentViewer.getCookie()).get(String.format("http://www.nicovideo.jp/user/%s", message.getUser_id())));
 							String userName = StringUtil.null2Val(StringUtil.groupMatchFirst("<title>(.*?)さんのユーザーページ[^<]+<\\/title>", html));
 							userNameCache.put(userid, userName);
@@ -809,23 +891,35 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 					StringUtil.null2Val(message.getScore()),
 			};
 
-			String[] links = StringUtil.groupMatch(MATCH_URL, StringUtil.null2Val(message.getText()).trim());
-			//TODO URL自動リンク
-			if (links.length > 0) {
-				for (String l : links ) {
-					Hyperlink link = new Hyperlink(table, SWT.WRAP);
-					link.setText(l);
-					TableEditor editor = new TableEditor(table);
-					editor.setEditor(link, item, 3);
-				}
-			}
+//			//growl通知
+//			if (PropertyUtil.isMac()) {
+//				//TODO macでかつ、設定がONだったら
+//				String title = message.getUser_id();
+//				GrowlNotification.getInstance().notify(title, message.getText());
+//			}
 
+//			String[] links = StringUtil.groupMatch(MATCH_URL, StringUtil.null2Val(message.getText()).trim());
+//			//TODO URL自動リンク
+//			if (links.length > 0) {
+//				Hyperlink link = new Hyperlink(table, SWT.WRAP);
+//				link.setText(StringUtil.null2Val(message.getText()).trim().replaceAll(MATCH_URL, "$1"));
+//				link.setUnderlined(true);
+//				TableEditor editor = new TableEditor(table);
+//				editor.grabHorizontal = true;
+//				editor.setEditor(link, item, 3);
+//			}
+
+//			//最終コメが見えていて、初期ロードが終わってれば自動スクロール
+//			boolean scrollFlag = (table.getItem(table.getItemCount()-1).getBounds().y == table.getClientArea().y + table.getClientArea().height);
 			item.setText(data);
-			if (StringUtil.inull2Val(message.getNo()) == 0 || StringUtil.inull2Val(threadMessage.getLast_res()) < StringUtil.inull2Val(message.getNo())) {
-				table.showItem(item);
-			}
+			table.setTopIndex(table.getItemCount()-1);
+//			if ((StringUtil.inull2Val(threadMessage.getLast_res()) == StringUtil.inull2Val(message.getNo()))) {
+//				//初期ロード後１回はスクロール
+//				table.setTopIndex(table.getItemCount()-1);
+//			} else if (scrollFlag && (StringUtil.inull2Val(message.getNo()) == 0 ||
+//				//初期ロード後であればアイテムが見えてる時だけスクロール
+//			}
 		}
-
 	}
 
 	/**

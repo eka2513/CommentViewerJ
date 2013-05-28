@@ -140,6 +140,10 @@ public class PluginUtil {
 		return list;
 	}
 
+	/**
+	 * プラグインのインスタンスをListで返す
+	 * @return
+	 */
 	public static List<PluginBase> loadPlugins() {
 		FileInputStream fis = null;
 		InputStreamReader isr = null;
@@ -197,6 +201,7 @@ public class PluginUtil {
 					br = null;
 					isr = null;
 					fis = null;
+					ignore.printStackTrace();
 				}
 		}
 		return list;

@@ -45,7 +45,7 @@ public interface CommentViewerConstants {
 	/** BASE_TIME */
 	public static final String END_TIME = "end_time";
 	/** COMMENT_THREAD_XML */
-	public static final String COMMENT_THREAD_XML = "<thread thread=\"%s\" scores=\"1\" version=\"20061206\" res_from=\"-200\"/>\0";
+	public static final String COMMENT_THREAD_XML = "<thread thread=\"%s\" scores=\"1\" version=\"20061206\" res_from=\"-100\"/>\0";
 
 	/////////// for api ///////////
 	/** getplayerstatusのurl */

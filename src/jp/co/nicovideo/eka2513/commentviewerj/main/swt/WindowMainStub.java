@@ -16,6 +16,8 @@ public class WindowMainStub {
 	public static void main(String[] args) throws FileNotFoundException {
 		try {
 			Display display = Display.getDefault();
+
+			
 			CommentViewerJMainWindow shell = new CommentViewerJMainWindow(display);
 		    shell.setLayout(new GridLayout(2,false));
 			shell.open();

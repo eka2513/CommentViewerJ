@@ -103,14 +103,17 @@ public class CocoaUIEnhancer {
         int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
         proc3Args = new Callback(getClass(), "actionProc", 3); //$NON-NLS-1$
-        //call getAddress
-        Method getAddress = Callback.class
-                .getMethod("getAddress", new Class[0]);
-        Object object = getAddress.invoke(proc3Args, null);
-        long proc3 = convertToLong(object);
+        long proc3 = proc3Args.getAddress();
+//        //call getAddress
+//        Method getAddress = Callback.class
+//                .getMethod("getAddress", new Class[0]);
+//        Object o = null;
+//        Object object = getAddress.invoke(proc3Args, o);
+//        long proc3 = convertToLong(object);
         if (proc3 == 0)
             SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 
+        Object object;
         //call objc_allocateClassPair
         Field field = OS.class.getField("class_NSObject");
         Object fieldObj = field.get(OS.class);

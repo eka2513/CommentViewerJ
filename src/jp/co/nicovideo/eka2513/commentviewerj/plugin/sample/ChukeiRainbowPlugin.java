@@ -17,7 +17,7 @@ public class ChukeiRainbowPlugin extends PluginBase {
 
 	public static void main(String[] args) {
 		ChukeiRainbowPlugin plugin = new ChukeiRainbowPlugin();
-		plugin.setLoopCount(20);
+		plugin.setLoopCount(8);
 		new PluginSettingUtil<ChukeiRainbowPlugin>().save(plugin);
 	}
 	private ThreadMessage threadMessage;

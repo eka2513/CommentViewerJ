@@ -48,16 +48,16 @@ public class CommentViewer extends CommentViewerBase {
 				threadMessage = message;
 				lastCommentNo = StringUtil.inull2Val(threadMessage.getLast_res());
 				PluginThreadEvent event = new PluginThreadEvent(this, message);
+				listener.threadReceived(event);
 				for (PluginBase p : plugins) {
 					new Thread(new ThreadReceivedRunnable(p, this, event)).start();
-					listener.threadReceived(event);
 				}
 			} else if (tag.startsWith("<chat_result")) {
 				//chat_resultタグ
 				ChatResultMessage message = XMLUtil.getChatResultMessage(tag);
 				PluginCommentEvent event = new PluginCommentEvent(this, message);
+				listener.commentResultReceived(event);
 				for (PluginBase p : plugins) {
-					listener.commentResultReceived(event);
 					new Thread(new ConnectedRunnable(p, this)).start();
 					new Thread(new CommentResultReceivedRunnable(p, this, event)).start();
 				}
@@ -75,8 +75,8 @@ public class CommentViewer extends CommentViewerBase {
 				if (message.getText().startsWith("/disconnect")
 						&& message.getPremium().equals(PremiumConstants.BROADCASTER.toString())) {
 					//放送終了
+					listener.disconnectReceived();
 					for (PluginBase p : plugins) {
-						listener.disconnectReceived();
 						new Thread(new DisconnectedRunnable(p, this)).start();
 					}
 					disconnect();
@@ -117,16 +117,16 @@ public class CommentViewer extends CommentViewerBase {
 						m.setNgComment(true);
 						m.setText("NGコメントです");
 						PluginCommentEvent event = new PluginCommentEvent(this, m);
+						listener.commentReceived(event);
 						for (PluginBase p : plugins) {
-							listener.commentReceived(event);
 							new Thread(new CommentReceivedRunnable(p, this, event)).start();
 						}
 					}
 				}
 				lastCommentNo = StringUtil.inull2Val(message.getNo());
 				PluginCommentEvent event = new PluginCommentEvent(this, message, calcActive());
+				listener.commentReceived(event);
 				for (PluginBase p : plugins) {
-					listener.commentReceived(event);
 					new Thread(new CommentReceivedRunnable(p, this, event)).start();
 				}
 			}
@@ -143,8 +143,8 @@ public class CommentViewer extends CommentViewerBase {
 		String vpos = CommentUtil.calcVpos(baseTime, e.getCurrentTime().toString());
 		e.setVpos(Integer.valueOf(vpos));
 		//プラグインのtickメソッドを呼び出す
+		listener.ticked(e);
 		for (PluginBase plugin : plugins) {
-			listener.ticked(e);
 			new Thread(new TimerTickRunnable(plugin, this, e)).start();
 		}
 	}

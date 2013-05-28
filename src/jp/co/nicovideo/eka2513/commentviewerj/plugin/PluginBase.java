@@ -5,7 +5,7 @@ import jp.co.nicovideo.eka2513.commentviewerj.eventlistener.PluginSendEventListe
 import jp.co.nicovideo.eka2513.commentviewerj.exception.CommentNotSendException;
 
 
-public abstract class PluginBase implements CommetViewerPlugin {
+public abstract class PluginBase implements CommentViewerPlugin {
 
 	private static final long serialVersionUID = -1193003055044323376L;
 

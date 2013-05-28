@@ -71,6 +71,10 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 		return false;
 	}
 
+	public boolean isConnected() {
+		return (comThread != null);
+	}
+
 	/**
 	 * BSPかどうかを返します
 	 * @return

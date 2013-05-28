@@ -17,6 +17,9 @@ public class GeneralSetting implements Serializable {
 	/** 放送終了通知を何分前に行うか */
 	private Integer broadcastCloseNotificationMin = 3;
 
+	/** BSP名 */
+	private String bspName;
+
 	/**
 	 * ブラウザを取得します。
 	 * @return ブラウザ
@@ -63,5 +66,21 @@ public class GeneralSetting implements Serializable {
 	 */
 	public void setBroadcastCloseNotificationMin(Integer broadcastCloseNotificationMin) {
 	    this.broadcastCloseNotificationMin = broadcastCloseNotificationMin;
+	}
+
+	/**
+	 * BSP名を取得します。
+	 * @return BSP名
+	 */
+	public String getBspName() {
+	    return bspName;
+	}
+
+	/**
+	 * BSP名を設定します。
+	 * @param bspName BSP名
+	 */
+	public void setBspName(String bspName) {
+	    this.bspName = bspName;
 	}
 }

@@ -23,7 +23,7 @@ public abstract class FormPluginBase<F extends FormBase<S>, S extends FormPlugin
 
 	private static final long serialVersionUID = 5426184514191232447L;
 	/** 設定保存用のbean */
-	private S setting;
+	protected S setting;
 	/** 設定保存用のbeanクラス */
 	private Class<S> clazzS;
 	/** フォームのクラス */
