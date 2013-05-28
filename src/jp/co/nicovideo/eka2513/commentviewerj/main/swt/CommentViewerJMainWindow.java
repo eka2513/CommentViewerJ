@@ -73,7 +73,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUIEventListener {
 
-	CommentViewer commentViewer;
+	private CommentViewer commentViewer;
 	private HashMap<Integer, Image> imageCache;
 	private HashMap<Integer, String> userNameCache;
 	private HashMap<String, RGB> colorCache;
@@ -122,7 +122,7 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 	private void createContents() {
 
 		if (PropertyUtil.isMac()) {
-			CocoaUIEnhancer enhancer = new CocoaUIEnhancer(getDisplay());
+			CocoaUIEnhancer enhancer = new CocoaUIEnhancer(this);
 			enhancer.earlyStartup();
 		} else {
 			Menu menuBar = new Menu(this, SWT.BAR);
@@ -135,7 +135,9 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 			pluginMenuItem.addSelectionListener(new SelectionListener() {
 				@Override
 				public void widgetSelected(SelectionEvent selectionevent) {
-			    	new SettingWindow(getDisplay()).open();
+			    	new SettingWindow(getShell()).open();
+//			    	//プラグインの再ロード
+//			    	commentViewer.setPlugins(PluginUtil.loadPlugins());
 				}
 				@Override
 				public void widgetDefaultSelected(SelectionEvent selectionevent) {
@@ -920,6 +922,14 @@ public class CommentViewerJMainWindow extends Shell implements GUIConstants, GUI
 //				//初期ロード後であればアイテムが見えてる時だけスクロール
 //			}
 		}
+	}
+
+	/**
+	 * commentViewerを取得します。
+	 * @return commentViewer
+	 */
+	public CommentViewer getCommentViewer() {
+	    return commentViewer;
 	}
 
 	/**

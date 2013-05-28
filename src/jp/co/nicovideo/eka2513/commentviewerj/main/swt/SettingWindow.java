@@ -18,6 +18,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -25,6 +27,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -34,24 +37,49 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.reflections.Reflections;
 
-public class SettingWindow extends Shell {
+public class SettingWindow extends Dialog {
 
 	@Override
 	protected void checkSubclass() {
 	}
 
+	private Shell shell;
+
 	private Map<String, Class<? extends PluginBase>> pluginCache;
 	private Table table;
 
-	public SettingWindow(Display display) {
-		super(display, SWT.SHELL_TRIM | SWT.APPLICATION_MODAL);
-	    setLayout(new GridLayout(10, false));
+	public SettingWindow(Shell parent, int style) {
+		super(parent, style);
+	}
+
+	public SettingWindow(Shell parent) {
+		super(parent, SWT.NONE);
+	}
+
+	public int open() {
 		createContents();
+		shell.open();
+		shell.layout();
+		Display display = getParent().getDisplay();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+		return SWT.OK;
 	}
 
 	private void createContents() {
-		setSize(800, 400);
-		CTabFolder tabFolder = new CTabFolder(this, SWT.NONE);
+		shell = new Shell(getParent(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		shell.addDisposeListener(new DisposeListener() {
+			@Override
+			public void widgetDisposed(DisposeEvent disposeevent) {
+				CommentViewerJMainWindow window = (CommentViewerJMainWindow) getParent();
+				window.getCommentViewer().loadPlugins();
+			}
+		});
+	    shell.setLayout(new GridLayout(10, false));
+		shell.setSize(800, 400);
+		CTabFolder tabFolder = new CTabFolder(shell, SWT.NONE);
 		tabFolder.setSimple(false);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.horizontalSpan = 10;
@@ -66,8 +94,8 @@ public class SettingWindow extends Shell {
 		// 選択タブの背景色にグラデーションを設定
 		tabFolder.setSelectionBackground(
 		  new Color[]{
-		    getDisplay().getSystemColor(SWT.COLOR_TITLE_BACKGROUND),
-		    getDisplay().getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT)},
+		    shell.getDisplay().getSystemColor(SWT.COLOR_TITLE_BACKGROUND),
+		    shell.getDisplay().getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT)},
 		  new int[] {90},
 		  true
 		);
@@ -78,7 +106,7 @@ public class SettingWindow extends Shell {
 		for (int i=0; i<tabNames.length; i++) {
 			tabItems[i] = new CTabItem(tabFolder,SWT.NONE);
 			tabItems[i].setText(tabNames[i]);
-			tabItems[i].setImage(new Image(getDisplay(), tabIcons[i]));
+			tabItems[i].setImage(new Image(shell.getDisplay(), tabIcons[i]));
 		}
 		//全般設定タブ設定
 		createWholeTab(tabFolder, tabItems[0]);
@@ -162,7 +190,7 @@ public class SettingWindow extends Shell {
 							Class<? extends FormPluginBase> pluginClass = pluginClassBase.asSubclass(FormPluginBase.class);
 							Class<?>[] types = new Class<?>[]{Display.class, Class.class, Class.class};
 							Constructor<? extends FormPluginBase> constructor = pluginClass.getConstructor(types);
-							Object[] args = new Object[]{getDisplay(), formClass, settingClass};
+							Object[] args = new Object[]{shell.getDisplay(), formClass, settingClass};
 							FormPluginBase formPlugin = constructor.newInstance(args);
 							formPlugin.formOpen();
 						} catch (Exception e) {

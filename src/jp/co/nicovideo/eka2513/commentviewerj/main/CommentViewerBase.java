@@ -104,6 +104,15 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 		}
 	}
 
+	public void loadPlugins() {
+		plugins = PluginUtil.loadPlugins();
+		//イベントリスナを登録
+		for (PluginBase p : plugins) {
+			p.addListener(this);
+		}
+
+	}
+
 	public void connect() throws CommentServerException {
 		//init active
 		activeCache = new HashMap<String, Long>();
@@ -119,13 +128,10 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 		xml = util.getPublishStatus(String.format("%s", lv));
 		publishstatus = XMLUtil.parsePublishStatus(xml);
 		presscastToken = util.getPresscastToken(lv);
-//		plugins.add(this);
-		plugins = PluginUtil.loadPlugins();
-		//イベントリスナを登録
-		for (PluginBase p : plugins) {
-			p.addListener(this);
-		}
 
+		loadPlugins();
+
+//		plugins.add(this);
 		if (StringUtil.null2Val(playerstatus.get(CommentViewerConstants.ADDR)).equals("")) {
 			//TODO error
 			System.err.println("コメントサーバに接続出来ません.");
@@ -261,7 +267,7 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 					}
 				}
 				lastCommentNo = StringUtil.inull2Val(message.getNo());
-				PluginCommentEvent event = new PluginCommentEvent(this, message, calcActive());
+				PluginCommentEvent event = new PluginCommentEvent(this, message, threadMessage, calcActive());
 				for (PluginBase p : plugins) {
 					new Thread(new CommentReceivedRunnable(p, this, event)).start();
 				}
@@ -405,6 +411,14 @@ public class CommentViewerBase implements CommentEventListener, PluginSendEventL
 	 */
 	public HashMap<String,String> getHandleNameCache() {
 	    return handleNameCache;
+	}
+
+	/**
+	 * pluginsを設定します。
+	 * @param plugins plugins
+	 */
+	public void setPlugins(List<PluginBase> plugins) {
+	    this.plugins = plugins;
 	}
 
 	/**

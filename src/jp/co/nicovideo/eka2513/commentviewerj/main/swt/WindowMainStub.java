@@ -17,7 +17,7 @@ public class WindowMainStub {
 		try {
 			Display display = Display.getDefault();
 
-			
+
 			CommentViewerJMainWindow shell = new CommentViewerJMainWindow(display);
 		    shell.setLayout(new GridLayout(2,false));
 			shell.open();
@@ -27,8 +27,8 @@ public class WindowMainStub {
 					display.sleep();
 				}
 			}
-			GlobalSettingUtil.save(shell.commentViewer.getGlobalSetting());
-			new SerializerUtil<HashMap<String, String>>().save(GUIConstants.HANDLE_NAME_DB, shell.commentViewer.getHandleNameCache());
+			GlobalSettingUtil.save(shell.getCommentViewer().getGlobalSetting());
+			new SerializerUtil<HashMap<String, String>>().save(GUIConstants.HANDLE_NAME_DB, shell.getCommentViewer().getHandleNameCache());
 			new SerializerUtil<HashMap<Integer, String>>().save(GUIConstants.USERNAME_CACHE_FILE, shell.getUserNameCache());
 		} catch (Exception e) {
 			e.printStackTrace();

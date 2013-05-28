@@ -2,7 +2,6 @@ package jp.co.nicovideo.eka2513.commentviewerj.plugin.form.sample;
 
 import java.util.Random;
 
-import jp.co.nicovideo.eka2513.commentviewerj.dto.ThreadMessage;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginCommentEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.PluginThreadEvent;
 import jp.co.nicovideo.eka2513.commentviewerj.event.TimerPluginEvent;
@@ -17,8 +16,6 @@ import org.eclipse.swt.widgets.Display;
 public class ChukeiPlugin extends FormPluginBase<ChukeiPluginForm, ChukeiPluginSetting> {
 
 	private static final long serialVersionUID = 2625243439269616176L;
-
-	private ThreadMessage threadMessage;
 
 	public static void main(String[] args) {
 		ChukeiPlugin plugin = new ChukeiPlugin(new Display(), ChukeiPluginForm.class, ChukeiPluginSetting.class);
@@ -43,16 +40,14 @@ public class ChukeiPlugin extends FormPluginBase<ChukeiPluginForm, ChukeiPluginS
 
 	@Override
 	public void threadReceived(CommentViewerBase source, PluginThreadEvent e) {
-		threadMessage = e.getMessage();
 	}
 
 	@Override
 	public void commentReceived(CommentViewerBase source, PluginCommentEvent e) {
+		//threadmessageとchatmessageがeventに入っている
+
 		//主コメ送信不可なら無視
 		if (!e.isBroadcaster())
-			return;
-		//threadタグを受信していなければ無視
-		if (threadMessage == null)
 			return;
 		//NGコメント分のオブジェクトは無視
 		if (e.getMessage().isNgComment())
@@ -60,7 +55,7 @@ public class ChukeiPlugin extends FormPluginBase<ChukeiPluginForm, ChukeiPluginS
 		// /(スラッシュ)で始まるコメントは中継しない
 		if (e.getMessage().getText().startsWith("/"))
 			return;
-		Integer lastNo = Integer.valueOf(threadMessage.getLast_res());
+		Integer lastNo = (e.getThreadMessage() == null) ? 0 : Integer.valueOf(e.getThreadMessage().getLast_res());
 		if (!e.getMessage().getPremium().equals("3") && Integer.valueOf(e.getMessage().getNo()) > lastNo) {
 			try {
 				for (int i=0; i<setting.getLoop(); i++) {

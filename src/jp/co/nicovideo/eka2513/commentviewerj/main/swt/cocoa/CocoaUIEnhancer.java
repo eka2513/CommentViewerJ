@@ -16,6 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import jp.co.nicovideo.eka2513.commentviewerj.main.swt.CommentViewerJMainWindow;
 import jp.co.nicovideo.eka2513.commentviewerj.main.swt.SettingWindow;
 import jp.co.nicovideo.eka2513.commentviewerj.main.swt.constants.GUIConstants;
 
@@ -98,7 +99,7 @@ public class CocoaUIEnhancer {
      * @throws Exception
      */
     private void init() throws Exception {
-        // TODO: These should either move out of Display or be accessible to this class.
+        // These should either move out of Display or be accessible to this class.
         byte[] types = { '*', '\0' };
         int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;
 
@@ -166,16 +167,16 @@ public class CocoaUIEnhancer {
      */
     private String fHideActionName;
 
-    private Display display;
+    private CommentViewerJMainWindow mainWindow;
 
     /**
      * Constructor
      *
      * @param actions Application event handler.
      */
-    public CocoaUIEnhancer(Display display) {
+    public CocoaUIEnhancer(CommentViewerJMainWindow shell) {
 
-    	this.display = display;
+    	this.mainWindow = shell;
 
         fAboutActionName = GUIConstants.APPLICATION_NAME + " について";
 
@@ -350,7 +351,7 @@ public class CocoaUIEnhancer {
      * This method is called when preferences menu item is selected.
      */
     void preferencesMenuItemSelected() {
-    	new SettingWindow(display).open();
+    	new SettingWindow(mainWindow).open();
     }
 
     /**

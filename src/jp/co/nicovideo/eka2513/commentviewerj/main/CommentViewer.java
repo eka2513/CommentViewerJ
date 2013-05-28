@@ -124,7 +124,7 @@ public class CommentViewer extends CommentViewerBase {
 					}
 				}
 				lastCommentNo = StringUtil.inull2Val(message.getNo());
-				PluginCommentEvent event = new PluginCommentEvent(this, message, calcActive());
+				PluginCommentEvent event = new PluginCommentEvent(this, message, threadMessage, calcActive());
 				listener.commentReceived(event);
 				for (PluginBase p : plugins) {
 					new Thread(new CommentReceivedRunnable(p, this, event)).start();
